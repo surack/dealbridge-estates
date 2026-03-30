@@ -20,7 +20,7 @@
 
     /* Sidebar */
     .sidebar {
-      width: 230px;
+      width: 240px;
       height: 100vh;
       background: #1E293B;
       color: white;
@@ -29,10 +29,10 @@
     }
 
     .logo {
-      font-size: 18px;
-      font-weight: bold;
-      margin-bottom: 30px;
-      line-height: 1.4;
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 35px;
+      letter-spacing: 0.5px;
     }
 
     .menu-item {
@@ -51,7 +51,7 @@
 
     /* Main */
     .main {
-      margin-left: 230px;
+      margin-left: 240px;
       width: 100%;
       padding: 20px;
     }
@@ -70,8 +70,13 @@
 
     .logout {
       cursor: pointer;
-      font-size: 20px;
+      font-size: 24px;
       color: #EF4444;
+      transition: 0.2s;
+    }
+
+    .logout:hover {
+      transform: scale(1.1);
     }
 
     /* Cards */
@@ -131,21 +136,21 @@
   <!-- Sidebar -->
   <div class="sidebar">
     <div class="logo">
-      DealBridge <br> Estates CRM
+      DealBridge Estates
     </div>
 
     <div class="menu-item active">Dashboard</div>
     <div class="menu-item">My Leads</div>
     <div class="menu-item">My Day</div>
     <div class="menu-item">Follow-ups</div>
-    <div class="menu-item">My Properties</div>
+    <div class="menu-item">Properties</div>
   </div>
 
   <!-- Main -->
   <div class="main">
 
     <div class="topbar">
-      <h1>Good Morning, Amit 👋</h1>
+      <h1>Hello, Amit 👋</h1>
       <div class="logout" onclick="logout()">⎋</div>
     </div>
 
@@ -213,7 +218,7 @@
       }
     });
 
-    // Monthly Growth Chart (UPDATED)
+    // Monthly Growth Chart
     new Chart(document.getElementById("growthChart"), {
       type: 'bar',
       data: {
