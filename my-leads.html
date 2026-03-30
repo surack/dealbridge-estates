@@ -5,7 +5,7 @@
 
 <style>
 * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI'; }
-body { display:flex; background:#F1F5F9; }
+body { background:#F1F5F9; }
 
 /* Sidebar */
 .sidebar {
@@ -26,15 +26,14 @@ body { display:flex; background:#F1F5F9; }
   width:calc(100% - 200px);
 }
 
-/* HEADER ROW */
+/* Header */
 .header {
   display:flex;
   justify-content:space-between;
   align-items:center;
-  margin-bottom:20px;
+  margin-bottom:25px;
 }
 
-/* BUTTON */
 .btn {
   padding:10px 15px;
   background:#2563EB;
@@ -44,21 +43,57 @@ body { display:flex; background:#F1F5F9; }
   cursor:pointer;
 }
 
-.btn:hover {
-  background:#1E40AF;
+.btn:hover { background:#1E40AF; }
+
+/* MAIN GRID */
+.main-grid {
+  display:flex;
+  gap:20px;
+}
+
+/* SECTION (Residential / Commercial) */
+.section {
+  flex:1;
+  background:white;
+  padding:20px;
+  border-radius:12px;
+  box-shadow:0 6px 15px rgba(0,0,0,0.05);
+}
+
+.section h2 {
+  margin-bottom:15px;
+  color:#1E293B;
+}
+
+/* SUB GRID */
+.sub-grid {
+  display:flex;
+  flex-direction:column;
+  gap:15px;
+}
+
+/* SUB SECTION */
+.sub-section {
+  background:#F8FAFC;
+  padding:15px;
+  border-radius:10px;
+}
+
+/* SUB TITLE */
+.sub-section h3 {
+  margin-bottom:10px;
+  font-size:15px;
+  color:#2563EB;
 }
 
 /* LEAD CARD */
 .lead {
   background:white;
-  padding:15px;
-  margin-bottom:12px;
-  border-radius:10px;
-  box-shadow:0 4px 10px rgba(0,0,0,0.05);
-}
-
-.lead h3 {
-  margin-bottom:5px;
+  padding:10px;
+  margin-bottom:8px;
+  border-radius:8px;
+  font-size:14px;
+  box-shadow:0 3px 8px rgba(0,0,0,0.04);
 }
 
 </style>
@@ -84,23 +119,64 @@ body { display:flex; background:#F1F5F9; }
     <button class="btn">+ Add Lead</button>
   </div>
 
-  <!-- LEADS -->
-  <div class="lead">
-    <h3>Ravi Sharma</h3>
-    <p>Budget: ₹50L</p>
-    <p>Status: New</p>
-  </div>
+  <!-- MAIN GRID -->
+  <div class="main-grid">
 
-  <div class="lead">
-    <h3>Amit Verma</h3>
-    <p>Budget: ₹75L</p>
-    <p>Status: Contacted</p>
-  </div>
+    <!-- RESIDENTIAL -->
+    <div class="section">
+      <h2>🏠 Residential</h2>
 
-  <div class="lead">
-    <h3>Neha Singh</h3>
-    <p>Budget: ₹40L</p>
-    <p>Status: Visit Scheduled</p>
+      <div class="sub-grid">
+
+        <div class="sub-section">
+          <h3>House</h3>
+
+          <div class="lead">Ravi - ₹50L - New</div>
+          <div class="lead">Amit - ₹75L - Contacted</div>
+        </div>
+
+        <div class="sub-section">
+          <h3>Shops</h3>
+
+          <div class="lead">Neha - ₹40L - Visit</div>
+        </div>
+
+        <div class="sub-section">
+          <h3>Plots</h3>
+
+          <div class="lead">Raj - ₹30L - New</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- COMMERCIAL -->
+    <div class="section">
+      <h2>🏢 Commercial</h2>
+
+      <div class="sub-grid">
+
+        <div class="sub-section">
+          <h3>House</h3>
+
+          <div class="lead">Karan - ₹90L</div>
+        </div>
+
+        <div class="sub-section">
+          <h3>Shops</h3>
+
+          <div class="lead">Suresh - ₹25K Rent</div>
+        </div>
+
+        <div class="sub-section">
+          <h3>Plots</h3>
+
+          <div class="lead">Vikas - ₹60L</div>
+        </div>
+
+      </div>
+    </div>
+
   </div>
 
 </div>
