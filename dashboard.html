@@ -5,17 +5,22 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
-    body { margin:0; display:flex; font-family:'Segoe UI'; background:#F1F5F9; }
+    * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI'; }
+
+    body { display:flex; background:#F1F5F9; }
 
     .sidebar {
-      width:240px; height:100vh; background:#1E293B;
-      color:white; padding:20px; position:fixed;
+      width:240px; height:100vh;
+      background:#1E293B; color:white;
+      padding:20px; position:fixed;
+      top:0; left:0;
     }
 
     .logo { font-size:22px; font-weight:700; margin-bottom:30px; }
 
     .menu-item {
-      padding:10px; margin:10px 0; border-radius:8px; cursor:pointer;
+      padding:10px; margin:10px 0;
+      border-radius:8px; cursor:pointer;
     }
 
     .menu-item:hover, .active { background:#2563EB; }
@@ -27,7 +32,8 @@
     }
 
     .topbar {
-      display:flex; justify-content:space-between; align-items:center;
+      display:flex; justify-content:space-between;
+      align-items:center;
     }
 
     .logout { font-size:26px; cursor:pointer; color:#EF4444; }
@@ -35,13 +41,15 @@
     .cards { display:flex; gap:15px; margin:20px 0; }
 
     .card {
-      flex:1; background:white; padding:15px; border-radius:10px;
+      flex:1; background:white; padding:15px;
+      border-radius:10px;
     }
 
     .grid { display:flex; gap:20px; }
 
     .box {
-      flex:1; background:white; padding:20px; border-radius:10px;
+      flex:1; background:white; padding:20px;
+      border-radius:10px;
     }
 
   </style>
