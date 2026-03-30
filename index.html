@@ -163,16 +163,24 @@
   </div>
 
   <script>
-    function login() {
-      let email = document.getElementById("email").value;
-      let password = document.getElementById("password").value;
+  function login() {
+    let email = document.getElementById("email").value;
+    let password = document.getElementById("password").value;
 
-      if(email === "admin@gmail.com" && password === "1234") {
-        window.location.href = "dashboard.html";
-      } else {
-        document.getElementById("message").innerText = "Invalid email or password";
-      }
+    // Admin
+    if(email === "admin@gmail.com" && password === "1234") {
+      window.location.href = "admin-dashboard.html";
     }
+
+    // All other users (sales team)
+    else if(password === "1234") {
+      window.location.href = "dashboard.html";
+    }
+
+    else {
+      document.getElementById("message").innerText = "Invalid email or password";
+    }
+  }
   </script>
 
 </body>
