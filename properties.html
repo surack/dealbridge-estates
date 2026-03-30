@@ -1,67 +1,45 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Properties</title>
+<title>Properties</title>
 
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI';
-      display: flex;
-      background: #F1F5F9;
-    }
+<style>
+body { margin:0; display:flex; font-family:'Segoe UI'; background:#F1F5F9; }
 
-    .sidebar {
-      width: 240px;
-      height: 100vh;
-      background: #1E293B;
-      color: white;
-      padding: 20px;
-      position: fixed;
-    }
+.sidebar { width:240px; height:100vh; background:#1E293B; color:white; padding:20px; position:fixed; }
+.logo { font-size:22px; font-weight:700; margin-bottom:30px; }
 
-    .main {
-      margin-left: 240px;
-      padding: 20px;
-      width: 100%;
-    }
+.menu-item { padding:10px; margin:10px 0; cursor:pointer; border-radius:8px; }
+.menu-item:hover, .active { background:#2563EB; }
 
-    .property {
-      background: white;
-      padding: 15px;
-      margin-bottom: 10px;
-      border-radius: 10px;
-    }
+.main { margin-left:240px; padding:20px; width:calc(100% - 240px); }
 
-  </style>
+.property { background:white; padding:15px; margin-bottom:10px; border-radius:10px; }
+</style>
 </head>
 
 <body>
 
-  <div class="sidebar">
-    <div class="logo">DealBridge Estates</div>
-    <div class="menu-item">Dashboard</div>
-    <div class="menu-item">My Leads</div>
-    <div class="menu-item">My Day</div>
-    <div class="menu-item active">Properties</div>
-  </div>
+<div class="sidebar">
+  <div class="logo">DealBridge Estates</div>
+  <div class="menu-item" onclick="go('dashboard.html')">Dashboard</div>
+  <div class="menu-item" onclick="go('my-leads.html')">My Leads</div>
+  <div class="menu-item" onclick="go('my-day.html')">My Day</div>
+  <div class="menu-item" onclick="go('followups.html')">Follow-ups</div>
+  <div class="menu-item active">Properties</div>
+</div>
 
-  <div class="main">
-    <h1>Properties</h1>
+<div class="main">
+<h1>Properties</h1>
 
-    <div class="property">
-      2BHK Flat - ₹50L - Allahabad
-    </div>
+<div class="property">2BHK - ₹50L - Allahabad</div>
+<div class="property">Shop - ₹30K Rent</div>
 
-    <div class="property">
-      Shop Space - ₹30K Rent - Civil Lines
-    </div>
+</div>
 
-  </div>
 <script>
-function go(page){
-  window.location.href = page;
-}
+function go(p){ window.location.href=p; }
 </script>
+
 </body>
 </html>
