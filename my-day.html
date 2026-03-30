@@ -7,6 +7,7 @@
 * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI'; }
 body { display:flex; background:#F1F5F9; }
 
+/* Sidebar */
 .sidebar {
   width:180px; height:100vh;
   background:#1E293B; color:white;
@@ -18,18 +19,44 @@ body { display:flex; background:#F1F5F9; }
 .menu-item { padding:10px; margin:10px 0; cursor:pointer; border-radius:8px; }
 .menu-item:hover, .active { background:#2563EB; }
 
+/* Main */
 .main {
   margin-left:200px;
   padding:20px;
   width:calc(100% - 200px);
 }
 
+/* Heading spacing */
+.main h1 {
+  margin-bottom:20px;
+}
+
+/* GRID LAYOUT */
+.grid {
+  display:flex;
+  gap:20px;
+}
+
+/* Section boxes */
+.section {
+  flex:1;
+}
+
+/* Section title */
+.section h2 {
+  margin-bottom:15px;
+  color:#1E293B;
+}
+
+/* Task cards */
 .task {
   background:white;
   padding:15px;
-  margin-bottom:10px;
+  margin-bottom:12px;
   border-radius:10px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.05);
 }
+
 </style>
 </head>
 
@@ -48,8 +75,37 @@ body { display:flex; background:#F1F5F9; }
 <div class="main">
   <h1>My Day</h1>
 
-  <div class="task">Call Ravi - Pending</div>
-  <div class="task">Visit Amit - Scheduled</div>
+  <div class="grid">
+
+    <!-- CALLS -->
+    <div class="section">
+      <h2>📞 Calls</h2>
+
+      <div class="task">
+        Call Ravi - Pending
+      </div>
+
+      <div class="task">
+        Call Neha - Follow-up
+      </div>
+
+    </div>
+
+    <!-- VISITS -->
+    <div class="section">
+      <h2>🏠 Scheduled Visits</h2>
+
+      <div class="task">
+        Visit Amit - 4 PM
+      </div>
+
+      <div class="task">
+        Visit Raj - 6 PM
+      </div>
+
+    </div>
+
+  </div>
 </div>
 
 <script>
