@@ -1,18 +1,70 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>DealBridge Estates</title>
+  <title>DealBridge Estates - Login</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: #f4f6f9;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .login-box {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      width: 300px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+  </style>
 </head>
+
 <body>
 
-  <h1>DealBridge Estates CRM</h1>
-  <p>Your system is starting...</p>
+  <div class="login-box">
+    <h2>DealBridge Estates</h2>
 
-  <button onclick="addLead()">Add Test Lead</button>
+    <input type="email" id="email" placeholder="Enter Email">
+    <input type="password" id="password" placeholder="Enter Password">
+
+    <button onclick="login()">Login</button>
+
+    <p id="message" style="color:red;"></p>
+  </div>
 
   <script>
-    function addLead() {
-      alert("Button working!");
+    function login() {
+      let email = document.getElementById("email").value;
+      let password = document.getElementById("password").value;
+
+      if(email === "admin@gmail.com" && password === "1234") {
+        window.location.href = "dashboard.html";
+      } else {
+        document.getElementById("message").innerText = "Invalid login!";
+      }
     }
   </script>
 
