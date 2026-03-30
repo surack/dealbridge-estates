@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Follow-ups</title>
+
+  <style>
+    body { margin:0; font-family:'Segoe UI'; display:flex; background:#F1F5F9; }
+
+    .sidebar {
+      width:240px; height:100vh; background:#1E293B;
+      color:white; padding:20px; position:fixed;
+    }
+
+    .logo { font-size:22px; font-weight:bold; margin-bottom:30px; }
+
+    .menu-item {
+      padding:10px; margin:10px 0; border-radius:8px;
+      cursor:pointer;
+    }
+
+    .menu-item:hover, .active { background:#2563EB; }
+
+    .main { margin-left:240px; padding:20px; width:100%; }
+
+    .task {
+      background:white;
+      padding:15px;
+      margin-bottom:12px;
+      border-radius:10px;
+      box-shadow:0 5px 12px rgba(0,0,0,0.08);
+    }
+
+    .task h4 { margin-bottom:5px; }
+
+    .status {
+      font-size:13px;
+      color:#2563EB;
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <div class="sidebar">
+    <div class="logo">DealBridge Estates</div>
+
+    <div class="menu-item" onclick="go('dashboard.html')">Dashboard</div>
+    <div class="menu-item" onclick="go('my-leads.html')">My Leads</div>
+    <div class="menu-item" onclick="go('my-day.html')">My Day</div>
+    <div class="menu-item active">Follow-ups</div>
+    <div class="menu-item" onclick="go('properties.html')">Properties</div>
+  </div>
+
+  <div class="main">
+    <h1>Follow-ups</h1>
+
+    <div class="task">
+      <h4>Call Ravi</h4>
+      <p>Discuss final price</p>
+      <span class="status">Today - 2 PM</span>
+    </div>
+
+    <div class="task">
+      <h4>Meeting with Amit</h4>
+      <p>Site visit discussion</p>
+      <span class="status">Tomorrow - 11 AM</span>
+    </div>
+
+  </div>
+
+<script>
+function go(page){ window.location.href=page; }
+</script>
+
+</body>
+</html>
