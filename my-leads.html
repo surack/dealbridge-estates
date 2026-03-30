@@ -31,7 +31,7 @@ body { background:#F1F5F9; }
   display:flex;
   justify-content:space-between;
   align-items:center;
-  margin-bottom:25px;
+  margin-bottom:20px;
 }
 
 .btn {
@@ -45,13 +45,34 @@ body { background:#F1F5F9; }
 
 .btn:hover { background:#1E40AF; }
 
+/* TOP CARDS */
+.cards {
+  display:flex;
+  gap:20px;
+  margin-bottom:25px;
+}
+
+.card {
+  flex:1;
+  padding:18px;
+  border-radius:12px;
+  color:white;
+  box-shadow:0 8px 20px rgba(0,0,0,0.08);
+}
+
+.residential { background:linear-gradient(135deg,#3B82F6,#1E40AF); }
+.commercial { background:linear-gradient(135deg,#22C55E,#15803D); }
+
+.card h4 { font-size:14px; opacity:0.9; }
+.card h2 { margin-top:5px; font-size:24px; }
+
 /* MAIN GRID */
 .main-grid {
   display:flex;
   gap:20px;
 }
 
-/* SECTION (Residential / Commercial) */
+/* SECTION */
 .section {
   flex:1;
   background:white;
@@ -79,10 +100,11 @@ body { background:#F1F5F9; }
   border-radius:10px;
 }
 
-/* SUB TITLE */
+/* UPDATED SUB HEADINGS */
 .sub-section h3 {
   margin-bottom:10px;
-  font-size:15px;
+  font-size:17px;   /* increased */
+  font-weight:600;
   color:#2563EB;
 }
 
@@ -119,6 +141,21 @@ body { background:#F1F5F9; }
     <button class="btn">+ Add Lead</button>
   </div>
 
+  <!-- TOP COUNTERS -->
+  <div class="cards">
+
+    <div class="card residential">
+      <h4>Residential Leads</h4>
+      <h2>4</h2>
+    </div>
+
+    <div class="card commercial">
+      <h4>Commercial Leads</h4>
+      <h2>3</h2>
+    </div>
+
+  </div>
+
   <!-- MAIN GRID -->
   <div class="main-grid">
 
@@ -130,20 +167,17 @@ body { background:#F1F5F9; }
 
         <div class="sub-section">
           <h3>House</h3>
-
           <div class="lead">Ravi - ₹50L - New</div>
           <div class="lead">Amit - ₹75L - Contacted</div>
         </div>
 
         <div class="sub-section">
           <h3>Shops</h3>
-
           <div class="lead">Neha - ₹40L - Visit</div>
         </div>
 
         <div class="sub-section">
           <h3>Plots</h3>
-
           <div class="lead">Raj - ₹30L - New</div>
         </div>
 
@@ -158,19 +192,16 @@ body { background:#F1F5F9; }
 
         <div class="sub-section">
           <h3>House</h3>
-
           <div class="lead">Karan - ₹90L</div>
         </div>
 
         <div class="sub-section">
           <h3>Shops</h3>
-
           <div class="lead">Suresh - ₹25K Rent</div>
         </div>
 
         <div class="sub-section">
           <h3>Plots</h3>
-
           <div class="lead">Vikas - ₹60L</div>
         </div>
 
