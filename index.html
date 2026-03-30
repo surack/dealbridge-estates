@@ -4,114 +4,140 @@
   <title>DealBridge Estates - Login</title>
 
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Segoe UI', sans-serif;
-    }
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', sans-serif;
+  }
 
-    body {
-      height: 100vh;
-      background: linear-gradient(135deg, #2563EB, #1E3A8A);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
+  body {
+    height: 100vh;
+    background: linear-gradient(135deg, #1E3A8A, #2563EB);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+  }
 
+  /* Background Pattern */
+  body::before {
+    content: "";
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.08) 1px, transparent 1px);
+    background-size: 40px 40px;
+    top: -50%;
+    left: -50%;
+    animation: moveBg 20s linear infinite;
+  }
+
+  @keyframes moveBg {
+    0% { transform: translate(0,0); }
+    100% { transform: translate(50px,50px); }
+  }
+
+  .container {
+    display: flex;
+    width: 900px;
+    height: 500px;
+    border-radius: 15px;
+    overflow: hidden;
+    backdrop-filter: blur(15px);
+    background: rgba(255,255,255,0.95);
+    box-shadow: 0 25px 50px rgba(0,0,0,0.25);
+    position: relative;
+    z-index: 1;
+  }
+
+  .left {
+    width: 50%;
+    background: linear-gradient(135deg, #2563EB, #1E40AF);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 40px;
+  }
+
+  .left h1 {
+    font-size: 32px;
+    margin-bottom: 10px;
+  }
+
+  .left p {
+    opacity: 0.9;
+    line-height: 1.5;
+  }
+
+  .right {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 40px;
+  }
+
+  .right h2 {
+    margin-bottom: 20px;
+    color: #1E293B;
+  }
+
+  input {
+    padding: 12px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    transition: 0.2s;
+  }
+
+  input:focus {
+    border-color: #2563EB;
+    box-shadow: 0 0 0 2px rgba(37,99,235,0.2);
+    outline: none;
+  }
+
+  button {
+    padding: 12px;
+    border: none;
+    background: #2563EB;
+    color: white;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+
+  button:hover {
+    background: #1E40AF;
+    transform: translateY(-1px);
+  }
+
+  .error {
+    color: red;
+    margin-top: 10px;
+    font-size: 14px;
+  }
+
+  @media(max-width: 768px) {
     .container {
-      display: flex;
-      width: 900px;
-      height: 500px;
-      background: white;
-      border-radius: 15px;
-      overflow: hidden;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+      flex-direction: column;
+      width: 90%;
+      height: auto;
+    }
+
+    .left, .right {
+      width: 100%;
     }
 
     .left {
-      width: 50%;
-      background: linear-gradient(135deg, #2563EB, #1E40AF);
-      color: white;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      padding: 40px;
+      text-align: center;
     }
-
-    .left h1 {
-      font-size: 32px;
-      margin-bottom: 10px;
-    }
-
-    .left p {
-      opacity: 0.9;
-    }
-
-    .right {
-      width: 50%;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      padding: 40px;
-    }
-
-    .right h2 {
-      margin-bottom: 20px;
-      color: #1E293B;
-    }
-
-    input {
-      padding: 12px;
-      margin-bottom: 15px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      font-size: 14px;
-    }
-
-    input:focus {
-      border-color: #2563EB;
-      outline: none;
-    }
-
-    button {
-      padding: 12px;
-      border: none;
-      background: #2563EB;
-      color: white;
-      border-radius: 8px;
-      font-size: 16px;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-
-    button:hover {
-      background: #1E40AF;
-    }
-
-    .error {
-      color: red;
-      margin-top: 10px;
-      font-size: 14px;
-    }
-
-    @media(max-width: 768px) {
-      .container {
-        flex-direction: column;
-        width: 90%;
-        height: auto;
-      }
-
-      .left, .right {
-        width: 100%;
-      }
-
-      .left {
-        text-align: center;
-      }
-    }
-
-  </style>
+  }
+</style>
 </head>
 
 <body>
