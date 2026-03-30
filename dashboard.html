@@ -1,52 +1,47 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Dashboard - DealBridge Estates</title>
+  <title>Dashboard</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
-    * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI'; }
-    body { display:flex; background:#F1F5F9; }
+    body { margin:0; display:flex; font-family:'Segoe UI'; background:#F1F5F9; }
 
     .sidebar {
       width:240px; height:100vh; background:#1E293B;
       color:white; padding:20px; position:fixed;
     }
 
-    .logo {
-      font-size:22px; font-weight:700; margin-bottom:30px;
-    }
+    .logo { font-size:22px; font-weight:700; margin-bottom:30px; }
 
     .menu-item {
-      padding:10px; margin:10px 0; border-radius:8px;
-      cursor:pointer;
+      padding:10px; margin:10px 0; border-radius:8px; cursor:pointer;
     }
 
     .menu-item:hover, .active { background:#2563EB; }
 
-    .main { margin-left:240px; width:100%; padding:20px; }
+    .main {
+      margin-left:240px;
+      padding:20px;
+      width:calc(100% - 240px);
+    }
 
     .topbar {
-      display:flex; justify-content:space-between;
-      align-items:center; margin-bottom:20px;
+      display:flex; justify-content:space-between; align-items:center;
     }
 
-    .logout {
-      font-size:26px; cursor:pointer; color:#EF4444;
-    }
+    .logout { font-size:26px; cursor:pointer; color:#EF4444; }
 
-    .cards { display:flex; gap:15px; margin-bottom:20px; }
+    .cards { display:flex; gap:15px; margin:20px 0; }
 
     .card {
-      flex:1; background:white; padding:18px;
-      border-radius:12px; box-shadow:0 6px 15px rgba(0,0,0,0.08);
+      flex:1; background:white; padding:15px; border-radius:10px;
     }
 
     .grid { display:flex; gap:20px; }
 
     .box {
-      flex:1; background:white; padding:20px;
-      border-radius:12px; box-shadow:0 6px 15px rgba(0,0,0,0.08);
+      flex:1; background:white; padding:20px; border-radius:10px;
     }
 
   </style>
@@ -54,63 +49,58 @@
 
 <body>
 
-  <div class="sidebar">
-    <div class="logo">DealBridge Estates</div>
+<div class="sidebar">
+  <div class="logo">DealBridge Estates</div>
 
-    <div class="menu-item active" onclick="go('dashboard.html')">Dashboard</div>
-    <div class="menu-item" onclick="go('my-leads.html')">My Leads</div>
-    <div class="menu-item" onclick="go('my-day.html')">My Day</div>
-    <div class="menu-item" onclick="go('followups.html')">Follow-ups</div>
-    <div class="menu-item" onclick="go('properties.html')">Properties</div>
+  <div class="menu-item active" onclick="go('dashboard.html')">Dashboard</div>
+  <div class="menu-item" onclick="go('my-leads.html')">My Leads</div>
+  <div class="menu-item" onclick="go('my-day.html')">My Day</div>
+  <div class="menu-item" onclick="go('followups.html')">Follow-ups</div>
+  <div class="menu-item" onclick="go('properties.html')">Properties</div>
+</div>
+
+<div class="main">
+
+  <div class="topbar">
+    <h1>Hello, Amit 👋</h1>
+    <div class="logout" onclick="logout()">⏻</div>
   </div>
 
-  <div class="main">
-
-    <div class="topbar">
-      <h1>Hello, Amit 👋</h1>
-      <div class="logout" onclick="logout()">⏻</div>
-    </div>
-
-    <div class="cards">
-      <div class="card"><h4>Total Leads</h4><p>120</p></div>
-      <div class="card"><h4>Deals Closed</h4><p>25</p></div>
-      <div class="card"><h4>Revenue</h4><p>₹5L</p></div>
-      <div class="card"><h4>Follow-ups</h4><p>8</p></div>
-    </div>
-
-    <div class="grid">
-      <div class="box">
-        <h3>Sales Performance</h3>
-        <canvas id="salesChart"></canvas>
-      </div>
-
-      <div class="box">
-        <h3>Monthly Growth</h3>
-        <canvas id="growthChart"></canvas>
-      </div>
-    </div>
-
+  <div class="cards">
+    <div class="card">Leads: 120</div>
+    <div class="card">Deals: 25</div>
+    <div class="card">Revenue: ₹5L</div>
+    <div class="card">Follow-ups: 8</div>
   </div>
+
+  <div class="grid">
+    <div class="box">
+      <h3>Sales Performance</h3>
+      <canvas id="salesChart"></canvas>
+    </div>
+
+    <div class="box">
+      <h3>Monthly Growth</h3>
+      <canvas id="growthChart"></canvas>
+    </div>
+  </div>
+
+</div>
 
 <script>
+function go(p){ window.location.href=p; }
 function logout(){ window.location.href="index.html"; }
-function go(page){ window.location.href=page; }
 
-// UPDATED 6 months
 new Chart(document.getElementById("salesChart"), {
   type:'line',
-  data:{
-    labels:["Jan","Feb","Mar","Apr","May","Jun"],
-    datasets:[{label:"Deals", data:[5,8,6,10,12,9], tension:0.4}]
-  }
+  data:{ labels:["Jan","Feb","Mar","Apr","May","Jun"],
+  datasets:[{data:[5,8,6,10,12,9]}] }
 });
 
 new Chart(document.getElementById("growthChart"), {
   type:'bar',
-  data:{
-    labels:["Jan","Feb","Mar","Apr","May","Jun"],
-    datasets:[{label:"Revenue", data:[10,20,15,30,25,35]}]
-  }
+  data:{ labels:["Jan","Feb","Mar","Apr","May","Jun"],
+  datasets:[{data:[10,20,15,30,25,35]}] }
 });
 </script>
 
