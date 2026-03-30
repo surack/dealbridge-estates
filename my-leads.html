@@ -7,6 +7,7 @@
 * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI'; }
 body { display:flex; background:#F1F5F9; }
 
+/* Sidebar */
 .sidebar {
   width:180px; height:100vh;
   background:#1E293B; color:white;
@@ -18,26 +19,33 @@ body { display:flex; background:#F1F5F9; }
 .menu-item { padding:10px; margin:10px 0; cursor:pointer; border-radius:8px; }
 .menu-item:hover, .active { background:#2563EB; }
 
+/* Main */
 .main {
   margin-left:200px;
   padding:20px;
   width:calc(100% - 200px);
 }
 
-/* SPACING FIX */
-.main h1 {
+/* HEADER ROW */
+.header {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
   margin-bottom:20px;
 }
 
 /* BUTTON */
 .btn {
-  padding:10px;
+  padding:10px 15px;
   background:#2563EB;
   color:white;
   border:none;
   border-radius:6px;
-  margin-bottom:20px;
   cursor:pointer;
+}
+
+.btn:hover {
+  background:#1E40AF;
 }
 
 /* LEAD CARD */
@@ -69,10 +77,14 @@ body { display:flex; background:#F1F5F9; }
 </div>
 
 <div class="main">
-  <h1>My Leads</h1>
 
-  <button class="btn">+ Add Lead</button>
+  <!-- HEADER -->
+  <div class="header">
+    <h1>My Leads</h1>
+    <button class="btn">+ Add Lead</button>
+  </div>
 
+  <!-- LEADS -->
   <div class="lead">
     <h3>Ravi Sharma</h3>
     <p>Budget: ₹50L</p>
