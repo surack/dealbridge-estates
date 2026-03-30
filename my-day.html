@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>My Day - DealBridge Estates</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      background: #F1F5F9;
+    }
+
+    .sidebar {
+      width: 240px;
+      height: 100vh;
+      background: #1E293B;
+      color: white;
+      padding: 20px;
+      position: fixed;
+    }
+
+    .logo {
+      font-size: 22px;
+      font-weight: bold;
+      margin-bottom: 30px;
+    }
+
+    .menu-item {
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .menu-item:hover,
+    .active {
+      background: #2563EB;
+    }
+
+    .main {
+      margin-left: 240px;
+      padding: 20px;
+      width: 100%;
+    }
+
+    .task {
+      background: white;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-radius: 10px;
+      box-shadow: 0 5px 12px rgba(0,0,0,0.08);
+    }
+
+    .task h4 {
+      margin-bottom: 5px;
+    }
+
+    .status {
+      color: #22C55E;
+      font-size: 13px;
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <div class="sidebar">
+    <div class="logo">DealBridge Estates</div>
+    <div class="menu-item">Dashboard</div>
+    <div class="menu-item">My Leads</div>
+    <div class="menu-item active">My Day</div>
+    <div class="menu-item">Follow-ups</div>
+    <div class="menu-item">Properties</div>
+  </div>
+
+  <div class="main">
+    <h1>My Day</h1>
+
+    <div class="task">
+      <h4>Call Ravi (New Lead)</h4>
+      <p>Discuss budget and property preference</p>
+      <span class="status">Pending</span>
+    </div>
+
+    <div class="task">
+      <h4>Site Visit with Amit</h4>
+      <p>2BHK property visit at 4 PM</p>
+      <span class="status">Scheduled</span>
+    </div>
+
+  </div>
+
+</body>
+</html>
