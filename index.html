@@ -3,6 +3,10 @@
 <head>
   <title>DealBridge Estates - Login</title>
 
+  <!-- FIREBASE -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+
   <style>
   * {
     margin: 0;
@@ -21,7 +25,6 @@
     overflow: hidden;
   }
 
-  /* Background Pattern */
   body::before {
     content: "";
     position: absolute;
@@ -45,7 +48,6 @@
     height: 500px;
     border-radius: 15px;
     overflow: hidden;
-    backdrop-filter: blur(15px);
     background: rgba(255,255,255,0.95);
     box-shadow: 0 25px 50px rgba(0,0,0,0.25);
     position: relative;
@@ -62,15 +64,7 @@
     padding: 40px;
   }
 
-  .left h1 {
-    font-size: 32px;
-    margin-bottom: 10px;
-  }
-
-  .left p {
-    opacity: 0.9;
-    line-height: 1.5;
-  }
+  .left h1 { font-size: 32px; margin-bottom: 10px; }
 
   .right {
     width: 50%;
@@ -90,14 +84,6 @@
     margin-bottom: 15px;
     border-radius: 8px;
     border: 1px solid #ccc;
-    font-size: 14px;
-    transition: 0.2s;
-  }
-
-  input:focus {
-    border-color: #2563EB;
-    box-shadow: 0 0 0 2px rgba(37,99,235,0.2);
-    outline: none;
   }
 
   button {
@@ -106,82 +92,80 @@
     background: #2563EB;
     color: white;
     border-radius: 8px;
-    font-size: 16px;
     cursor: pointer;
-    transition: 0.3s;
   }
 
-  button:hover {
-    background: #1E40AF;
-    transform: translateY(-1px);
-  }
+  button:hover { background: #1E40AF; }
 
   .error {
     color: red;
     margin-top: 10px;
     font-size: 14px;
   }
-
-  @media(max-width: 768px) {
-    .container {
-      flex-direction: column;
-      width: 90%;
-      height: auto;
-    }
-
-    .left, .right {
-      width: 100%;
-    }
-
-    .left {
-      text-align: center;
-    }
-  }
 </style>
 </head>
 
 <body>
 
-  <div class="container">
+<div class="container">
 
-    <div class="left">
-      <h1>DealBridge Estates</h1>
-      <p>Smart Real Estate CRM for managing leads, properties & deals efficiently.</p>
-    </div>
-
-    <div class="right">
-      <h2>Login to your account</h2>
-
-      <input type="email" id="email" placeholder="Email Address">
-      <input type="password" id="password" placeholder="Password">
-
-      <button onclick="login()">Login</button>
-
-      <p class="error" id="message"></p>
-    </div>
-
+  <div class="left">
+    <h1>DealBridge Estates</h1>
+    <p>Smart CRM for managing leads, properties & deals.</p>
   </div>
 
-  <script>
-  function login() {
-    let email = document.getElementById("email").value;
-    let password = document.getElementById("password").value;
+  <div class="right">
+    <h2>Login</h2>
 
-    // Admin
-    if(email === "admin@gmail.com" && password === "1234") {
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Password">
+
+    <button onclick="login()">Login</button>
+
+    <p id="message" class="error"></p>
+  </div>
+
+</div>
+
+<script>
+/* 🔥 PASTE YOUR FIREBASE CONFIG HERE */
+const firebaseConfig = {
+  apiKey: "AIzaSyBHswtiTozfR5xVZUOWtg_pTNtXjiCQJF0",
+  authDomain: "deal-bridge-estates.firebaseapp.com",
+  projectId: "deal-bridge-estates"
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+
+function login() {
+  let email = document.getElementById("email").value;
+  let password = document.getElementById("password").value;
+
+  auth.signInWithEmailAndPassword(email, password)
+  .then((userCredential) => {
+
+    let userEmail = userCredential.user.email;
+
+    // 👉 EXTRACT NAME FROM EMAIL
+    let username = userEmail.split("@")[0];
+
+    // SAVE NAME FOR DASHBOARD
+    localStorage.setItem("username", username);
+
+    // ROLE SYSTEM
+    if(userEmail === "admin@gmail.com"){
       window.location.href = "admin-dashboard.html";
-    }
-
-    // All other users (sales team)
-    else if(password === "1234") {
+    } else {
       window.location.href = "dashboard.html";
     }
 
-    else {
-      document.getElementById("message").innerText = "Invalid email or password";
-    }
-  }
-  </script>
+  })
+  .catch((error) => {
+    document.getElementById("message").innerText = error.message;
+  });
+}
+</script>
 
 </body>
 </html>
