@@ -43,8 +43,6 @@ body { background:#F1F5F9; }
   cursor:pointer;
 }
 
-.btn:hover { background:#1E40AF; }
-
 /* Cards */
 .cards {
   display:flex;
@@ -57,91 +55,81 @@ body { background:#F1F5F9; }
   padding:18px;
   border-radius:12px;
   color:white;
-  box-shadow:0 8px 20px rgba(0,0,0,0.08);
 }
 
 .residential { background:linear-gradient(135deg,#3B82F6,#1E40AF); }
 .commercial { background:linear-gradient(135deg,#22C55E,#15803D); }
 
-.card h2 { margin-top:5px; }
-
-/* MAIN GRID */
+/* Layout */
 .main-grid {
   display:flex;
   gap:20px;
 }
 
-/* SECTION */
+/* Section */
 .section {
   flex:1;
   background:white;
   padding:20px;
   border-radius:12px;
-  box-shadow:0 6px 15px rgba(0,0,0,0.05);
 }
 
-.section h2 {
+/* Tabs */
+.tabs {
+  display:flex;
+  gap:10px;
   margin-bottom:15px;
-  color:#1E293B;
 }
 
-/* BUY / RENT TABS */
-.category-title {
-  font-size:15px;
-  font-weight:600;
-  margin-bottom:10px;
-  padding:6px 10px;
-  display:inline-block;
+.tab {
+  padding:6px 12px;
   border-radius:6px;
   background:#E2E8F0;
-  color:#1E293B;
+  cursor:pointer;
+  font-size:13px;
 }
 
-/* SUB GRID */
-.sub-grid {
-  display:flex;
-  flex-direction:column;
-  gap:12px;
+.tab.active {
+  background:#2563EB;
+  color:white;
 }
 
-/* SUB SECTION */
+/* Sub sections */
 .sub-section {
   background:#F8FAFC;
   padding:12px;
   border-radius:10px;
-  border:1px solid #E2E8F0;
+  margin-bottom:12px;
 }
 
-/* SUB HEADING */
 .sub-section h3 {
   margin-bottom:8px;
   font-size:15px;
-  font-weight:600;
   color:#2563EB;
 }
 
-/* LEAD CARD */
+/* Lead */
 .lead {
   background:white;
   padding:10px;
   margin-bottom:6px;
   border-radius:8px;
-  font-size:13px;
   display:flex;
   justify-content:space-between;
   align-items:center;
-  box-shadow:0 3px 6px rgba(0,0,0,0.05);
   border-left:4px solid #2563EB;
 }
 
-/* STATUS TAG */
+/* Status */
 .status {
   font-size:11px;
   padding:3px 6px;
   border-radius:5px;
   background:#DBEAFE;
-  color:#1D4ED8;
 }
+
+/* Hide inactive */
+.hidden { display:none; }
 
 </style>
 </head>
@@ -166,14 +154,8 @@ body { background:#F1F5F9; }
   </div>
 
   <div class="cards">
-    <div class="card residential">
-      <h4>Residential</h4>
-      <h2>6</h2>
-    </div>
-    <div class="card commercial">
-      <h4>Commercial</h4>
-      <h2>4</h2>
-    </div>
+    <div class="card residential"><h4>Residential</h4><h2>6</h2></div>
+    <div class="card commercial"><h4>Commercial</h4><h2>4</h2></div>
   </div>
 
   <div class="main-grid">
@@ -182,33 +164,33 @@ body { background:#F1F5F9; }
     <div class="section">
       <h2>🏠 Residential</h2>
 
-      <div class="category-title">Buy</div>
-      <div class="sub-grid">
+      <!-- Tabs -->
+      <div class="tabs">
+        <div class="tab active" onclick="switchTab('res-buy')">Buy</div>
+        <div class="tab" onclick="switchTab('res-rent')">Rent</div>
+      </div>
+
+      <!-- BUY -->
+      <div id="res-buy" class="tab-content">
 
         <div class="sub-section">
           <h3>Home / Flat</h3>
-          <div class="lead">
-            Ravi - ₹50L <span class="status">New</span>
-          </div>
+          <div class="lead">Ravi - ₹50L <span class="status">New</span></div>
         </div>
 
         <div class="sub-section">
           <h3>Shop / Godown</h3>
-          <div class="lead">
-            Amit - ₹75L <span class="status">Hot</span>
-          </div>
+          <div class="lead">Amit - ₹75L <span class="status">Hot</span></div>
         </div>
 
       </div>
 
-      <div class="category-title">Rent</div>
-      <div class="sub-grid">
+      <!-- RENT -->
+      <div id="res-rent" class="tab-content hidden">
 
         <div class="sub-section">
           <h3>Home / Flat</h3>
-          <div class="lead">
-            Raj - ₹15K <span class="status">New</span>
-          </div>
+          <div class="lead">Raj - ₹15K <span class="status">New</span></div>
         </div>
 
       </div>
@@ -219,26 +201,27 @@ body { background:#F1F5F9; }
     <div class="section">
       <h2>🏢 Commercial</h2>
 
-      <div class="category-title">Buy</div>
-      <div class="sub-grid">
+      <div class="tabs">
+        <div class="tab active" onclick="switchTab('com-buy')">Buy</div>
+        <div class="tab" onclick="switchTab('com-rent')">Rent</div>
+      </div>
+
+      <!-- BUY -->
+      <div id="com-buy" class="tab-content">
 
         <div class="sub-section">
           <h3>Shop / Godown</h3>
-          <div class="lead">
-            Suresh - ₹60L <span class="status">Deal</span>
-          </div>
+          <div class="lead">Suresh - ₹60L <span class="status">Deal</span></div>
         </div>
 
       </div>
 
-      <div class="category-title">Rent</div>
-      <div class="sub-grid">
+      <!-- RENT -->
+      <div id="com-rent" class="tab-content hidden">
 
         <div class="sub-section">
           <h3>Shop / Godown</h3>
-          <div class="lead">
-            Deepak - ₹25K <span class="status">New</span>
-          </div>
+          <div class="lead">Deepak - ₹25K <span class="status">New</span></div>
         </div>
 
       </div>
@@ -251,6 +234,17 @@ body { background:#F1F5F9; }
 
 <script>
 function go(p){ window.location.href=p; }
+
+// TAB SWITCH FUNCTION
+function switchTab(id){
+  let parent = event.target.parentElement.parentElement;
+
+  parent.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+  event.target.classList.add("active");
+
+  parent.querySelectorAll(".tab-content").forEach(c => c.classList.add("hidden"));
+  parent.querySelector("#"+id).classList.remove("hidden");
+}
 </script>
 
 </body>
