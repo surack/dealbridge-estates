@@ -111,7 +111,6 @@
     <div class="logout" onclick="logout()">⏻</div>
   </div>
 
-  <!-- CARDS -->
   <div class="cards">
 
     <div class="card leads">
@@ -140,7 +139,6 @@
 
   </div>
 
-  <!-- CHARTS -->
   <div class="grid">
 
     <div class="box">
@@ -172,7 +170,7 @@ const db = firebase.database();
 
 auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 
-/* 🔐 AUTH CHECK */
+/* 🔐 AUTH */
 auth.onAuthStateChanged(user => {
 
   if(!user){
@@ -184,7 +182,7 @@ auth.onAuthStateChanged(user => {
     document.getElementById("welcome").innerText =
       "Hello, " + username + " 👋";
 
-    loadDashboardData(user.uid);
+    loadDashboardData(username);
   }
 
 });
@@ -199,12 +197,18 @@ function logout(){
 /* 📊 LOAD DATA */
 let salesChart, growthChart;
 
-function loadDashboardData(uid){
+function loadDashboardData(username){
 
-  db.ref("users/" + uid).on("value", snapshot => {
+  db.ref("users/" + username).on("value", snapshot => {
 
     let data = snapshot.val();
-    if(!data) return;
+
+    console.log("DATA:", data); // DEBUG
+
+    if(!data){
+      alert("No data found for this user in Firebase");
+      return;
+    }
 
     let leads = data.leads || 0;
     let deals = data.deals || 0;
@@ -213,7 +217,6 @@ function loadDashboardData(uid){
     document.getElementById("deals").innerText = deals;
     document.getElementById("revenue").innerText = "₹" + (data.revenue || 0);
 
-    /* ✅ CONVERSION CALCULATION */
     let conversion = 0;
     if(leads > 0){
       conversion = ((deals / leads) * 100).toFixed(1);
@@ -236,9 +239,7 @@ function loadDashboardData(uid){
           tension:0.4
         }]
       },
-      options:{
-        plugins:{ legend:{ display:false } }
-      }
+      options:{ plugins:{ legend:{ display:false } } }
     });
 
     growthChart = new Chart(document.getElementById("growthChart"), {
@@ -249,12 +250,11 @@ function loadDashboardData(uid){
           data: data.growth || []
         }]
       },
-      options:{
-        plugins:{ legend:{ display:false } }
-      }
+      options:{ plugins:{ legend:{ display:false } } }
     });
 
   });
+
 }
 
 /* 📅 MONTHS */
