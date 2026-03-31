@@ -62,7 +62,7 @@
     .leads { background:linear-gradient(135deg,#3B82F6,#1E40AF); }
     .deals { background:linear-gradient(135deg,#22C55E,#15803D); }
     .revenue { background:linear-gradient(135deg,#F59E0B,#B45309); }
-    .followups { background:linear-gradient(135deg,#EF4444,#991B1B); }
+    .conversion { background:linear-gradient(135deg,#8B5CF6,#6D28D9); }
 
     .icon {
       position:absolute;
@@ -111,6 +111,7 @@
     <div class="logout" onclick="logout()">⏻</div>
   </div>
 
+  <!-- CARDS -->
   <div class="cards">
 
     <div class="card leads">
@@ -131,14 +132,15 @@
       <h2 id="revenue">0</h2>
     </div>
 
-    <div class="card followups">
-      <div class="icon">📞</div>
-      <h4>Follow-ups</h4>
-      <h2 id="followups">0</h2>
+    <div class="card conversion">
+      <div class="icon">📊</div>
+      <h4>Conversion Rate</h4>
+      <h2 id="conversion">0%</h2>
     </div>
 
   </div>
 
+  <!-- CHARTS -->
   <div class="grid">
 
     <div class="box">
@@ -182,7 +184,7 @@ auth.onAuthStateChanged(user => {
     document.getElementById("welcome").innerText =
       "Hello, " + username + " 👋";
 
-    loadDashboardData(username);
+    loadDashboardData(user.uid);
   }
 
 });
@@ -197,17 +199,27 @@ function logout(){
 /* 📊 LOAD DATA */
 let salesChart, growthChart;
 
-function loadDashboardData(username){
+function loadDashboardData(uid){
 
-  db.ref("users/" + username).on("value", snapshot => {
+  db.ref("users/" + uid).on("value", snapshot => {
 
     let data = snapshot.val();
     if(!data) return;
 
-    document.getElementById("leads").innerText = data.leads || 0;
-    document.getElementById("deals").innerText = data.deals || 0;
+    let leads = data.leads || 0;
+    let deals = data.deals || 0;
+
+    document.getElementById("leads").innerText = leads;
+    document.getElementById("deals").innerText = deals;
     document.getElementById("revenue").innerText = "₹" + (data.revenue || 0);
-    document.getElementById("followups").innerText = data.followups || 0;
+
+    /* ✅ CONVERSION CALCULATION */
+    let conversion = 0;
+    if(leads > 0){
+      conversion = ((deals / leads) * 100).toFixed(1);
+    }
+
+    document.getElementById("conversion").innerText = conversion + "%";
 
     let months = getLast6Months();
 
@@ -225,9 +237,7 @@ function loadDashboardData(username){
         }]
       },
       options:{
-        plugins:{
-          legend:{ display:false }   // ✅ REMOVED UNDEFINED
-        }
+        plugins:{ legend:{ display:false } }
       }
     });
 
@@ -240,9 +250,7 @@ function loadDashboardData(username){
         }]
       },
       options:{
-        plugins:{
-          legend:{ display:false }   // ✅ REMOVED UNDEFINED
-        }
+        plugins:{ legend:{ display:false } }
       }
     });
 
