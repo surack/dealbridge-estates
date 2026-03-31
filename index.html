@@ -138,6 +138,19 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 
+auth.onAuthStateChanged(user => {
+  if(user){
+    let email = user.email;
+
+    // Redirect based on role
+    if(email === "admin@gmail.com"){
+      window.location.href = "admin-dashboard.html";
+    } else {
+      window.location.href = "dashboard.html";
+    }
+  }
+});
+
 function login() {
   let email = document.getElementById("email").value;
   let password = document.getElementById("password").value;
