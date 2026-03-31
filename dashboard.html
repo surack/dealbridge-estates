@@ -14,25 +14,52 @@
     * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI'; }
     body { background:#F1F5F9; }
 
-    .sidebar { width:180px; height:100vh; background:#1E293B; color:white; padding:20px; position:fixed; }
+    .sidebar {
+      width:180px; height:100vh;
+      background:#1E293B; color:white;
+      padding:20px; position:fixed;
+      top:0; left:0;
+    }
+
     .logo { font-size:22px; font-weight:700; margin-bottom:30px; }
 
-    .menu-item { padding:10px; margin:10px 0; border-radius:8px; cursor:pointer; }
+    .menu-item {
+      padding:10px; margin:10px 0;
+      border-radius:8px; cursor:pointer;
+    }
+
     .menu-item:hover, .active { background:#2563EB; }
 
-    .main { margin-left:200px; padding:20px; }
+    .main {
+      margin-left:200px;
+      padding:20px;
+      width:calc(100% - 200px);
+    }
 
-    .topbar { display:flex; justify-content:space-between; align-items:center; }
+    .topbar {
+      display:flex; justify-content:space-between;
+      align-items:center;
+      margin-bottom:10px;
+    }
 
-    .logout { font-size:26px; cursor:pointer; color:#EF4444; }
+    .logout {
+      font-size:26px;
+      cursor:pointer;
+      color:#EF4444;
+    }
 
-    .cards { display:flex; gap:20px; margin:25px 0; }
+    .cards {
+      display:flex;
+      gap:20px;
+      margin:25px 0;
+    }
 
     .card {
       flex:1;
       padding:22px;
       border-radius:14px;
       color:white;
+      position:relative;
     }
 
     .leads { background:linear-gradient(135deg,#3B82F6,#1E40AF); }
@@ -40,9 +67,31 @@
     .revenue { background:linear-gradient(135deg,#F59E0B,#B45309); }
     .followups { background:linear-gradient(135deg,#EF4444,#991B1B); }
 
-    .grid { display:flex; gap:20px; }
+    .icon {
+      position:absolute;
+      right:15px;
+      top:15px;
+      opacity:0.3;
+    }
 
-    .box { flex:1; background:white; padding:20px; border-radius:12px; }
+    .grid {
+      display:flex;
+      gap:20px;
+      margin-top:10px;
+    }
+
+    .box {
+      flex:1;
+      background:white;
+      padding:20px;
+      border-radius:12px;
+      box-shadow:0 6px 15px rgba(0,0,0,0.05);
+    }
+
+    .box h3 {
+      margin-bottom:10px;
+      color:#1E293B;
+    }
   </style>
 </head>
 
@@ -50,6 +99,12 @@
 
 <div class="sidebar">
   <div class="logo">DealBridge Estates</div>
+
+  <div class="menu-item active" onclick="go('dashboard.html')">Dashboard</div>
+  <div class="menu-item" onclick="go('my-leads.html')">My Leads</div>
+  <div class="menu-item" onclick="go('my-day.html')">My Day</div>
+  <div class="menu-item" onclick="go('followups.html')">Follow-ups</div>
+  <div class="menu-item" onclick="go('properties.html')">Properties</div>
 </div>
 
 <div class="main">
@@ -59,21 +114,55 @@
     <div class="logout" onclick="logout()">⏻</div>
   </div>
 
+  <!-- CARDS -->
   <div class="cards">
-    <div class="card leads"><h4>Total Leads</h4><h2 id="leads">0</h2></div>
-    <div class="card deals"><h4>Deals</h4><h2 id="deals">0</h2></div>
-    <div class="card revenue"><h4>Revenue</h4><h2 id="revenue">0</h2></div>
-    <div class="card followups"><h4>Follow-ups</h4><h2 id="followups">0</h2></div>
+
+    <div class="card leads">
+      <div class="icon">👥</div>
+      <h4>Total Leads</h4>
+      <h2 id="leads">0</h2>
+    </div>
+
+    <div class="card deals">
+      <div class="icon">🤝</div>
+      <h4>Deals Closed</h4>
+      <h2 id="deals">0</h2>
+    </div>
+
+    <div class="card revenue">
+      <div class="icon">💰</div>
+      <h4>Total Revenue</h4>
+      <h2 id="revenue">0</h2>
+    </div>
+
+    <div class="card followups">
+      <div class="icon">📞</div>
+      <h4>Follow-ups</h4>
+      <h2 id="followups">0</h2>
+    </div>
+
   </div>
 
+  <!-- CHARTS -->
   <div class="grid">
-    <div class="box"><canvas id="salesChart"></canvas></div>
-    <div class="box"><canvas id="growthChart"></canvas></div>
+
+    <div class="box">
+      <h3>Monthly Sales Performance</h3>
+      <canvas id="salesChart"></canvas>
+    </div>
+
+    <div class="box">
+      <h3>Monthly Revenue Growth</h3>
+      <canvas id="growthChart"></canvas>
+    </div>
+
   </div>
 
 </div>
 
 <script>
+
+/* 🔥 FIREBASE CONFIG */
 const firebaseConfig = {
   apiKey: "AIzaSyBHswtiTozfR5xVZUOWtg_pTNtXjiCQJF0",
   authDomain: "deal-bridge-estates.firebaseapp.com",
@@ -82,60 +171,85 @@ const firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
+
 const auth = firebase.auth();
 const db = firebase.database();
 
-/* 🔐 AUTO LOGIN + SECURITY */
+/* 🔐 KEEP USER LOGGED IN */
 auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 
+/* 🔐 PROTECT PAGE */
 auth.onAuthStateChanged(user => {
+
   if(!user){
     window.location.href = "index.html";
   } else {
-    let username = user.email.split("@")[0];
-    document.getElementById("welcome").innerText = "Hello, " + username + " 👋";
 
-    loadData(username);
+    let username = user.email.split("@")[0];
+
+    document.getElementById("welcome").innerText =
+      "Hello, " + username + " 👋";
+
+    loadDashboardData(username);
   }
+
 });
 
 /* 🚪 LOGOUT */
 function logout(){
   auth.signOut().then(()=>{
-    window.location.href="index.html";
+    window.location.href = "index.html";
   });
 }
 
-/* 📊 LOAD DATA FROM DATABASE */
-function loadData(username){
+/* 📊 LOAD DATA */
+let salesChart, growthChart;
+
+function loadDashboardData(username){
 
   db.ref("users/" + username).on("value", snapshot => {
 
     let data = snapshot.val();
-
     if(!data) return;
 
     document.getElementById("leads").innerText = data.leads || 0;
     document.getElementById("deals").innerText = data.deals || 0;
-    document.getElementById("revenue").innerText = "₹" + data.revenue || 0;
+    document.getElementById("revenue").innerText = "₹" + (data.revenue || 0);
     document.getElementById("followups").innerText = data.followups || 0;
 
     let months = getLast6Months();
 
-    new Chart(document.getElementById("salesChart"), {
+    if(salesChart) salesChart.destroy();
+    if(growthChart) growthChart.destroy();
+
+    salesChart = new Chart(document.getElementById("salesChart"), {
       type:'line',
-      data:{ labels: months, datasets:[{ data: data.sales || [] }] }
+      data:{
+        labels: months,
+        datasets:[{
+          data: data.sales || [],
+          borderWidth:2,
+          tension:0.4
+        }]
+      }
     });
 
-    new Chart(document.getElementById("growthChart"), {
+    growthChart = new Chart(document.getElementById("growthChart"), {
       type:'bar',
-      data:{ labels: months, datasets:[{ data: data.growth || [] }] }
+      data:{
+        labels: months,
+        datasets:[{
+          data: data.growth || [],
+          borderWidth:1
+        }]
+      }
     });
 
   });
+
 }
 
-/* 📅 MONTHS */
+/* 📅 LAST 6 MONTHS */
 function getLast6Months(){
   const m = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   let res = [];
@@ -145,8 +259,13 @@ function getLast6Months(){
     let temp = new Date(d.getFullYear(), d.getMonth()-i, 1);
     res.push(m[temp.getMonth()]);
   }
+
   return res;
 }
+
+/* NAV */
+function go(p){ window.location.href=p; }
+
 </script>
 
 </body>
