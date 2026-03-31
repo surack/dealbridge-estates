@@ -147,13 +147,9 @@ function login() {
 
     let userEmail = userCredential.user.email;
 
-    // 👉 EXTRACT NAME FROM EMAIL
     let username = userEmail.split("@")[0];
-
-    // SAVE NAME FOR DASHBOARD
     localStorage.setItem("username", username);
 
-    // ROLE SYSTEM
     if(userEmail === "admin@gmail.com"){
       window.location.href = "admin-dashboard.html";
     } else {
@@ -162,7 +158,36 @@ function login() {
 
   })
   .catch((error) => {
-    document.getElementById("message").innerText = error.message;
+
+    let message = "";
+
+    switch(error.code){
+
+      case "auth/user-not-found":
+        message = "User not found";
+        break;
+
+      case "auth/wrong-password":
+        message = "Incorrect password";
+        break;
+
+      case "auth/invalid-email":
+        message = "Invalid email format";
+        break;
+
+      case "auth/invalid-credential":
+        message = "Invalid email or password";
+        break;
+
+      case "auth/too-many-requests":
+        message = "Too many attempts. Try again later.";
+        break;
+
+      default:
+        message = "Login failed. Please try again.";
+    }
+
+    document.getElementById("message").innerText = message;
   });
 }
 </script>
