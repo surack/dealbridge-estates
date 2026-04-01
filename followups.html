@@ -60,6 +60,15 @@ margin-right:5px;
 background:#DBEAFE;
 }
 
+.status-tag{
+display:inline-block;
+padding:4px 8px;
+border-radius:6px;
+font-size:11px;
+background:#DCFCE7;
+margin-top:5px;
+}
+
 .manage{
 margin-top:10px;
 width:100%;
@@ -76,21 +85,22 @@ background:rgba(0,0,0,0.5);
 display:none;justify-content:center;align-items:center;
 }
 
+/* 🔥 SCROLLABLE FORM FIX */
 .popup-box{
 background:white;
 padding:25px;
 border-radius:14px;
 width:380px;
+max-height:90vh;
+overflow-y:auto;
 box-shadow:0 15px 35px rgba(0,0,0,0.2);
 }
 
 .popup-box h3{
 margin-bottom:20px;
-color:#1E293B;
 }
 
-/* Form spacing */
-.popup input,.popup select, .popup textarea{
+.popup input,.popup select,.popup textarea{
 width:100%;
 padding:10px;
 margin-bottom:12px;
@@ -98,7 +108,6 @@ border-radius:8px;
 border:1px solid #ccc;
 }
 
-/* Buttons */
 .actions{
 display:flex;
 gap:10px;
@@ -166,6 +175,14 @@ cursor:pointer;
 <option value="plot">Plot</option>
 </select>
 
+<select id="statusFilter" onchange="render()">
+<option value="">All Status</option>
+<option value="new">New</option>
+<option value="contacted">Contacted</option>
+<option value="visit">Visit</option>
+<option value="closed">Closed</option>
+</select>
+
 <select id="assignFilter" onchange="render()">
 <option value="">All Leads</option>
 <option value="unassigned">Unassigned</option>
@@ -188,7 +205,6 @@ cursor:pointer;
 <input id="location" placeholder="Preferred Location">
 
 <input id="area" placeholder="Area Required (sq ft)">
-
 <input id="budgetMin" placeholder="Budget Min">
 <input id="budgetMax" placeholder="Budget Max">
 
@@ -258,10 +274,11 @@ render();
 
 function render(){
 
-let search=document.getElementById("search").value.toLowerCase();
+let search=val("search").toLowerCase();
 let typeF=val("typeFilter");
 let catF=val("categoryFilter");
 let propF=val("propertyFilter");
+let statusF=val("statusFilter");
 let assignF=val("assignFilter");
 
 let container=document.getElementById("leadsContainer");
@@ -275,6 +292,7 @@ if(search && !l.name.toLowerCase().includes(search)) return;
 if(typeF && l.type!==typeF) return;
 if(catF && l.category!==catF) return;
 if(propF && l.propertyType!==propF) return;
+if(statusF && l.status!==statusF) return;
 
 if(assignF==="unassigned" && l.assignedTo) return;
 if(assignF==="assigned" && !l.assignedTo) return;
@@ -303,9 +321,12 @@ container.innerHTML+=`
 <p>📐 ${l.area || "-"} sq ft</p>
 
 <p style="font-size:12px;color:#64748B">ID: ${l.leadId}</p>
+
+<div class="status-tag">Status: ${l.status}</div>
+
 <p>Assigned: ${l.assignedTo || "None"}</p>
 
-${l.remark ? `<p style="margin-top:8px;font-size:13px">📝 ${l.remark}</p>` : ""}
+${l.remark ? `<p style="margin-top:8px">📝 ${l.remark}</p>` : ""}
 
 ${btn}
 
@@ -316,8 +337,8 @@ ${btn}
 
 function addLead(){
 
-let name=document.getElementById("name").value.trim();
-let phone=document.getElementById("phone").value.trim();
+let name=val("name").trim();
+let phone=val("phone").trim();
 
 if(!name || !phone){
 alert("Enter name & phone");
@@ -345,9 +366,8 @@ assignedTo:""
 }).then(()=>{
 clearForm();
 closePopup();
-}).catch(err=>{
-alert(err.message);
 });
+
 }
 
 function val(id){return document.getElementById(id).value}
