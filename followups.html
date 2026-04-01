@@ -12,9 +12,16 @@
 body{background:#F1F5F9}
 
 /* Sidebar */
-.sidebar{width:180px;height:100vh;background:#1E293B;color:white;padding:20px;position:fixed}
+.sidebar{
+width:180px;height:100vh;
+background:#1E293B;color:white;
+padding:20px;position:fixed;
+}
 .logo{font-size:22px;font-weight:700;margin-bottom:30px}
-.menu-item{padding:10px;margin:10px 0;border-radius:8px;cursor:pointer}
+.menu-item{
+padding:10px;margin:10px 0;
+border-radius:8px;cursor:pointer;
+}
 .menu-item:hover,.active{background:#2563EB}
 
 /* Main */
@@ -85,7 +92,6 @@ background:rgba(0,0,0,0.5);
 display:none;justify-content:center;align-items:center;
 }
 
-/* 🔥 SCROLLABLE FORM FIX */
 .popup-box{
 background:white;
 padding:25px;
@@ -93,11 +99,6 @@ border-radius:14px;
 width:380px;
 max-height:90vh;
 overflow-y:auto;
-box-shadow:0 15px 35px rgba(0,0,0,0.2);
-}
-
-.popup-box h3{
-margin-bottom:20px;
 }
 
 .popup input,.popup select,.popup textarea{
@@ -111,17 +112,15 @@ border:1px solid #ccc;
 .actions{
 display:flex;
 gap:10px;
-margin-top:10px;
 }
 
 .save-btn{
 flex:1;
 padding:10px;
-background:linear-gradient(135deg,#2563EB,#1E40AF);
+background:#2563EB;
 color:white;
 border:none;
 border-radius:8px;
-cursor:pointer;
 }
 
 .cancel-btn{
@@ -130,19 +129,22 @@ padding:10px;
 background:#E2E8F0;
 border:none;
 border-radius:8px;
-cursor:pointer;
 }
 </style>
 </head>
 
 <body>
 
+<!-- ✅ FIXED SIDEBAR -->
 <div class="sidebar">
 <div class="logo">DealBridge Estates</div>
-<div class="menu-item">Dashboard</div>
-<div class="menu-item">My Leads</div>
-<div class="menu-item">My Day</div>
+
+<div class="menu-item" onclick="go('dashboard.html')">Dashboard</div>
+<div class="menu-item" onclick="go('my-leads.html')">My Leads</div>
+<div class="menu-item" onclick="go('my-day.html')">My Day</div>
 <div class="menu-item active">All Leads</div>
+<div class="menu-item" onclick="go('properties.html')">Properties</div>
+
 </div>
 
 <div class="main">
@@ -152,7 +154,6 @@ cursor:pointer;
 <button class="btn" onclick="openPopup()">+ Add Lead</button>
 </div>
 
-<!-- FILTERS -->
 <div class="filters">
 <input id="search" placeholder="Search..." oninput="render()">
 
@@ -202,9 +203,9 @@ cursor:pointer;
 
 <input id="name" placeholder="Client Name">
 <input id="phone" placeholder="Phone Number">
-<input id="location" placeholder="Preferred Location">
+<input id="location" placeholder="Location">
 
-<input id="area" placeholder="Area Required (sq ft)">
+<input id="area" placeholder="Area">
 <input id="budgetMin" placeholder="Budget Min">
 <input id="budgetMax" placeholder="Budget Max">
 
@@ -225,11 +226,11 @@ cursor:pointer;
 </select>
 
 <select id="urgency">
-<option value="low">Low Urgency</option>
-<option value="high">High Urgency</option>
+<option value="low">Low</option>
+<option value="high">High</option>
 </select>
 
-<textarea id="remark" placeholder="Remark (optional)"></textarea>
+<textarea id="remark" placeholder="Remark"></textarea>
 
 <div class="actions">
 <button class="cancel-btn" onclick="closePopup()">Cancel</button>
@@ -304,32 +305,23 @@ btn=`<button class="manage" onclick="assign('${id}')">Assign to Me</button>`;
 
 container.innerHTML+=`
 <div class="card">
-
 <h3>${l.name}</h3>
 <p>${l.phone}</p>
+<p>${l.location || ""}</p>
 
-<p style="color:#64748B;font-size:13px">${l.location || ""}</p>
-
-<div style="margin:8px 0">
+<div>
 <span class="tag">${l.type}</span>
 <span class="tag">${l.category}</span>
 <span class="tag">${l.propertyType}</span>
-<span class="tag">${l.urgency}</span>
 </div>
 
-<p>💰 ₹${l.budgetMin || "-"} - ₹${l.budgetMax || "-"}</p>
-<p>📐 ${l.area || "-"} sq ft</p>
-
-<p style="font-size:12px;color:#64748B">ID: ${l.leadId}</p>
+<p>₹${l.budgetMin || "-"} - ${l.budgetMax || "-"}</p>
 
 <div class="status-tag">Status: ${l.status}</div>
 
 <p>Assigned: ${l.assignedTo || "None"}</p>
 
-${l.remark ? `<p style="margin-top:8px">📝 ${l.remark}</p>` : ""}
-
 ${btn}
-
 </div>
 `;
 });
@@ -346,10 +338,9 @@ return;
 }
 
 let key=db.ref("leads").push().key;
-let leadId="L-"+Date.now();
 
 db.ref("leads/"+key).set({
-leadId,
+leadId:"L-"+Date.now(),
 name,
 phone,
 location:val("location"),
@@ -378,6 +369,11 @@ document.querySelectorAll(".popup input, .popup textarea").forEach(i=>i.value=""
 
 function assign(id){
 db.ref("leads/"+id).update({assignedTo:currentUser});
+}
+
+/* 🔥 FIXED NAVIGATION */
+function go(page){
+window.location.href=page;
 }
 
 function openPopup(){popup.style.display="flex";}
