@@ -36,7 +36,7 @@ color:white;border:none;border-radius:8px;
 cursor:pointer;
 }
 
-/* Counter */
+/* ✅ NEW COUNTER */
 .top-card{
 background:linear-gradient(135deg,#3B82F6,#1E40AF);
 color:white;padding:20px;border-radius:14px;margin-bottom:20px;
@@ -63,10 +63,6 @@ padding:18px;
 border-radius:14px;
 box-shadow:0 10px 25px rgba(0,0,0,0.05);
 }
-
-/* NEW PROFESSIONAL LABEL STYLE */
-.label{font-size:12px;color:#64748B;}
-.value{margin-bottom:6px;font-size:14px;}
 
 .tag{
 display:inline-block;
@@ -119,16 +115,26 @@ border-radius:8px;
 border:1px solid #ccc;
 }
 
-.actions{display:flex;gap:10px;}
+.actions{
+display:flex;
+gap:10px;
+}
 
 .save-btn{
-flex:1;padding:10px;
-background:#2563EB;color:white;border:none;border-radius:8px;
+flex:1;
+padding:10px;
+background:#2563EB;
+color:white;
+border:none;
+border-radius:8px;
 }
 
 .cancel-btn{
-flex:1;padding:10px;
-background:#E2E8F0;border:none;border-radius:8px;
+flex:1;
+padding:10px;
+background:#E2E8F0;
+border:none;
+border-radius:8px;
 }
 </style>
 </head>
@@ -152,6 +158,7 @@ background:#E2E8F0;border:none;border-radius:8px;
 <button class="btn" onclick="openPopup()">+ Add Lead</button>
 </div>
 
+<!-- ✅ NEW COUNTER -->
 <div class="top-card">
 <h2 id="totalLeads">0 Leads</h2>
 <p>Total available leads</p>
@@ -198,9 +205,10 @@ background:#E2E8F0;border:none;border-radius:8px;
 
 </div>
 
-<!-- POPUP SAME (UNCHANGED) -->
+<!-- POPUP -->
 <div class="popup" id="popup">
 <div class="popup-box">
+
 <h3>Add Lead</h3>
 
 <input id="name" placeholder="Client Name">
@@ -238,6 +246,7 @@ background:#E2E8F0;border:none;border-radius:8px;
 <button class="cancel-btn" onclick="closePopup()">Cancel</button>
 <button class="save-btn" onclick="addLead()">Save</button>
 </div>
+
 </div>
 </div>
 
@@ -310,17 +319,9 @@ btn=`<button class="manage" onclick="assign('${id}')">Assign to Me</button>`;
 
 container.innerHTML+=`
 <div class="card">
-
 <h3>${l.name}</h3>
-
-<div class="label">📱 Phone</div>
-<div class="value">${l.phone}</div>
-
-<div class="label">📍 Location</div>
-<div class="value">${l.location || "-"}</div>
-
-<div class="label">📐 Area</div>
-<div class="value">${l.area || "-"}</div>
+<p>${l.phone}</p>
+<p>${l.location || ""}</p>
 
 <div>
 <span class="tag">${l.type}</span>
@@ -328,21 +329,13 @@ container.innerHTML+=`
 <span class="tag">${l.propertyType}</span>
 </div>
 
-<div class="label">💰 Budget</div>
-<div class="value">₹${l.budgetMin || "-"} - ${l.budgetMax || "-"}</div>
-
-<div class="label">⚡ Urgency</div>
-<div class="value">${l.urgency || "-"}</div>
-
-<div class="label">📝 Remark</div>
-<div class="value">${l.remark || "-"}</div>
+<p>₹${l.budgetMin || "-"} - ${l.budgetMax || "-"}</p>
 
 <div class="status-tag">Status: ${l.status}</div>
 
-<p><b>Assigned:</b> ${l.assignedTo || "None"}</p>
+<p>Assigned: ${l.assignedTo || "None"}</p>
 
 ${btn}
-
 </div>
 `;
 });
@@ -350,17 +343,44 @@ ${btn}
 document.getElementById("totalLeads").innerText = count + " Leads";
 }
 
-/* ✅ UPDATED ASSIGN FUNCTION */
-function assign(id){
+/* ✅ UPDATED ADD LEAD */
+function addLead(){
 
-db.ref("leads/"+id).update({assignedTo:currentUser});
+let name=val("name").trim();
+let phone=val("phone").trim();
 
-/* 🔥 INCREASE USER LEADS COUNT */
-let ref = db.ref("users/"+currentUser+"/leads");
+if(!name || !phone){
+alert("Enter name & phone");
+return;
+}
 
-ref.once("value").then(s=>{
-let current = s.val() || 0;
-ref.set(current + 1);
+let now=new Date();
+
+let key=db.ref("leads").push().key;
+
+db.ref("leads/"+key).set({
+leadId:"L-"+Date.now(),
+name,
+phone,
+location:val("location"),
+area:val("area"),
+budgetMin:val("budgetMin"),
+budgetMax:val("budgetMax"),
+type:val("type"),
+category:val("category"),
+propertyType:val("propertyType"),
+urgency:val("urgency"),
+remark:val("remark"),
+status:"new",
+assignedTo:"",
+
+/* ✅ NEW FIELDS */
+addedOn: now.toISOString().split("T")[0],
+addedBy: currentUser
+
+}).then(()=>{
+clearForm();
+closePopup();
 });
 
 }
@@ -371,7 +391,13 @@ function clearForm(){
 document.querySelectorAll(".popup input, .popup textarea").forEach(i=>i.value="");
 }
 
-function go(page){window.location.href=page;}
+function assign(id){
+db.ref("leads/"+id).update({assignedTo:currentUser});
+}
+
+function go(page){
+window.location.href=page;
+}
 
 function openPopup(){popup.style.display="flex";}
 function closePopup(){popup.style.display="none";}
