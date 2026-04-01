@@ -37,9 +37,7 @@ margin-bottom:20px;
 flex-wrap:wrap;
 }
 .filters input,.filters select{
-padding:10px;
-border-radius:8px;
-border:1px solid #ccc;
+padding:10px;border-radius:8px;border:1px solid #ccc;
 }
 
 /* Cards */
@@ -131,13 +129,11 @@ width:100%;padding:10px;margin-bottom:10px;border-radius:6px;border:1px solid #c
 <option value="plot">Plot</option>
 </select>
 
-<!-- ✅ NEW FILTER -->
 <select id="assignFilter" onchange="render()">
 <option value="">All Leads</option>
 <option value="unassigned">Unassigned</option>
 <option value="assigned">Assigned</option>
 </select>
-
 </div>
 
 <div class="leads-container" id="leadsContainer"></div>
@@ -150,9 +146,14 @@ width:100%;padding:10px;margin-bottom:10px;border-radius:6px;border:1px solid #c
 
 <h3>Add Lead</h3>
 
-<input id="name" placeholder="Name">
-<input id="phone" placeholder="Phone">
-<input id="location" placeholder="Location">
+<input id="name" placeholder="Client Name">
+<input id="phone" placeholder="Phone Number">
+<input id="location" placeholder="Preferred Location">
+
+<input id="area" placeholder="Area Required (sq ft)">
+
+<input id="budgetMin" placeholder="Budget Min">
+<input id="budgetMax" placeholder="Budget Max">
 
 <select id="type">
 <option value="buy">Buy</option>
@@ -168,6 +169,11 @@ width:100%;padding:10px;margin-bottom:10px;border-radius:6px;border:1px solid #c
 <option value="house">House</option>
 <option value="shop">Shop</option>
 <option value="plot">Plot</option>
+</select>
+
+<select id="urgency">
+<option value="low">Low Urgency</option>
+<option value="high">High Urgency</option>
 </select>
 
 <button onclick="addLead()">Save</button>
@@ -214,7 +220,7 @@ render();
 /* RENDER */
 function render(){
 
-let search=searchInput();
+let search=document.getElementById("search").value.toLowerCase();
 let typeF=val("typeFilter");
 let catF=val("categoryFilter");
 let propF=val("propertyFilter");
@@ -224,6 +230,7 @@ let container=document.getElementById("leadsContainer");
 container.innerHTML="";
 
 Object.keys(allLeads).forEach(id=>{
+
 let l=allLeads[id];
 
 if(search && !l.name.toLowerCase().includes(search)) return;
@@ -241,26 +248,33 @@ btn=`<button class="manage" onclick="assign('${id}')">Assign to Me</button>`;
 
 container.innerHTML+=`
 <div class="card">
+
 <h3>${l.name}</h3>
 <p>${l.phone}</p>
-<p>${l.location}</p>
 
-<div>
+<p style="color:#64748B;font-size:13px">${l.location || ""}</p>
+
+<div style="margin:8px 0">
 <span class="tag">${l.type}</span>
 <span class="tag">${l.category}</span>
 <span class="tag">${l.propertyType}</span>
+<span class="tag">${l.urgency}</span>
 </div>
 
-<p>ID: ${l.leadId}</p>
+<p>💰 ₹${l.budgetMin || "-"} - ₹${l.budgetMax || "-"}</p>
+<p>📐 ${l.area || "-"} sq ft</p>
+
+<p style="font-size:12px;color:#64748B">ID: ${l.leadId}</p>
 <p>Assigned: ${l.assignedTo || "None"}</p>
 
 ${btn}
+
 </div>
 `;
 });
 }
 
-/* 🔥 FINAL ADD LEAD (100% WORKING) */
+/* ADD LEAD */
 function addLead(){
 
 let name=document.getElementById("name").value.trim();
@@ -271,19 +285,22 @@ alert("Enter name & phone");
 return;
 }
 
-/* SAFE UNIQUE ID */
 let key=db.ref("leads").push().key;
 let leadId="L-"+Date.now();
 
-/* SAVE */
 db.ref("leads/"+key).set({
 leadId,
 name,
 phone,
-location:document.getElementById("location").value,
+location:val("location"),
+area:val("area"),
+budgetMin:val("budgetMin"),
+budgetMax:val("budgetMax"),
 type:val("type"),
 category:val("category"),
 propertyType:val("propertyType"),
+urgency:val("urgency"),
+status:"new",
 assignedTo:""
 }).then(()=>{
 clearForm();
@@ -294,9 +311,9 @@ alert(err.message);
 
 }
 
-/* HELPERS */
-function val(id){return document.getElementById(id).value;}
-function searchInput(){return document.getElementById("search").value.toLowerCase();}
+function val(id){return document.getElementById(id).value}
+
+/* CLEAR FORM */
 function clearForm(){
 document.querySelectorAll(".popup input").forEach(i=>i.value="");
 }
