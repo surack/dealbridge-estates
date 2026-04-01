@@ -12,7 +12,7 @@
 * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI'; }
 body { background:#F1F5F9; }
 
-/* Sidebar SAME */
+/* Sidebar (UNCHANGED) */
 .sidebar {
   width:180px; height:100vh;
   background:#1E293B; color:white;
@@ -22,16 +22,18 @@ body { background:#F1F5F9; }
 .menu-item { padding:10px; margin:10px 0; cursor:pointer; border-radius:8px; }
 .menu-item:hover, .active { background:#2563EB; }
 
-/* Main SAME */
+/* Main */
 .main {
   margin-left:200px;
   padding:20px;
+  width:calc(100% - 200px);
 }
 
 /* Header */
 .header {
   display:flex;
   justify-content:space-between;
+  align-items:center;
   margin-bottom:20px;
 }
 
@@ -87,7 +89,7 @@ body { background:#F1F5F9; }
   background:white;
   padding:20px;
   border-radius:10px;
-  width:300px;
+  width:320px;
 }
 
 .popup input, .popup select {
@@ -100,124 +102,18 @@ body { background:#F1F5F9; }
 
 <body>
 
+<!-- SIDEBAR (FIXED) -->
 <div class="sidebar">
   <div class="logo">DealBridge Estates</div>
 
   <div class="menu-item" onclick="go('dashboard.html')">Dashboard</div>
-  <div class="menu-item" onclick="go('my-day.html')">My Day</div>
-  <div class="menu-item" onclick="go('my-leads.html')">My Leads</div> 
-  <div class="menu-item active">All Leads</div>
-  <div class="menu-item" onclick="go('properties.html')">Properties</div> </div>
-  <!DOCTYPE html>
-<html>
-<head>
-<title>All Leads</title>
-
-<!-- FIREBASE -->
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-
-<style>
-* { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI'; }
-body { background:#F1F5F9; }
-
-/* Sidebar SAME */
-.sidebar {
-  width:180px; height:100vh;
-  background:#1E293B; color:white;
-  padding:20px; position:fixed;
-}
-.logo { font-size:22px; font-weight:700; margin-bottom:30px; }
-.menu-item { padding:10px; margin:10px 0; cursor:pointer; border-radius:8px; }
-.menu-item:hover, .active { background:#2563EB; }
-
-/* Main SAME */
-.main {
-  margin-left:200px;
-  padding:20px;
-}
-
-/* Header */
-.header {
-  display:flex;
-  justify-content:space-between;
-  margin-bottom:20px;
-}
-
-.btn {
-  padding:10px 15px;
-  background:#2563EB;
-  color:white;
-  border:none;
-  border-radius:6px;
-  cursor:pointer;
-}
-
-/* Leads Grid */
-.leads-container {
-  display:grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px,1fr));
-  gap:15px;
-}
-
-/* Lead Card */
-.lead-card {
-  background:white;
-  padding:15px;
-  border-radius:10px;
-  box-shadow:0 5px 10px rgba(0,0,0,0.05);
-}
-
-.lead-card h3 { margin-bottom:5px; }
-.lead-card p { font-size:13px; margin-bottom:4px; }
-
-.manage {
-  margin-top:10px;
-  padding:6px;
-  background:#2563EB;
-  color:white;
-  border:none;
-  border-radius:6px;
-  cursor:pointer;
-}
-
-/* Popup */
-.popup {
-  position:fixed;
-  top:0; left:0;
-  width:100%; height:100%;
-  background:rgba(0,0,0,0.4);
-  display:none;
-  justify-content:center;
-  align-items:center;
-}
-
-.popup-box {
-  background:white;
-  padding:20px;
-  border-radius:10px;
-  width:300px;
-}
-
-.popup input, .popup select {
-  width:100%;
-  padding:8px;
-  margin-bottom:10px;
-}
-</style>
-</head>
-
-<body>
-
-<div class="sidebar">
-  <div class="logo">DealBridge Estates</div>
-
-  <div class="menu-item" onclick="go('dashboard.html')">Dashboard</div>
+  <div class="menu-item" onclick="go('my-leads.html')">My Leads</div>
   <div class="menu-item" onclick="go('my-day.html')">My Day</div>
   <div class="menu-item active">All Leads</div>
+  <div class="menu-item" onclick="go('properties.html')">Properties</div>
 </div>
 
+<!-- MAIN -->
 <div class="main">
 
   <div class="header">
@@ -229,7 +125,7 @@ body { background:#F1F5F9; }
 
 </div>
 
-<!-- POPUP -->
+<!-- POPUP FORM -->
 <div class="popup" id="popup">
   <div class="popup-box">
 
@@ -263,7 +159,7 @@ body { background:#F1F5F9; }
 
 <script>
 
-/* FIREBASE CONFIG */
+/* 🔥 FIREBASE CONFIG */
 const firebaseConfig = {
   apiKey: "AIzaSyBHswtiTozfR5xVZUOWtg_pTNtXjiCQJF0",
   authDomain: "deal-bridge-estates.firebaseapp.com",
@@ -276,23 +172,29 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.database();
 
-/* 🔐 AUTH PROTECTION */
+/* 🔐 AUTH CHECK */
 auth.onAuthStateChanged(user=>{
   if(!user){
-    window.location.href="index.html";
+    window.location.href = "index.html";
   } else {
     loadLeads();
   }
 });
 
-/* LOAD LEADS */
+/* 📊 LOAD LEADS */
 function loadLeads(){
 
   db.ref("leads").on("value", snap=>{
 
     let data = snap.val();
     let container = document.getElementById("leadsContainer");
+
     container.innerHTML = "";
+
+    if(!data){
+      container.innerHTML = "No leads found";
+      return;
+    }
 
     for(let id in data){
 
@@ -306,10 +208,10 @@ function loadLeads(){
 
       container.innerHTML += `
         <div class="lead-card">
-          <h3>${l.name}</h3>
-          <p>${l.phone}</p>
+          <h3>${l.name || ""}</h3>
+          <p>📞 ${l.phone || ""}</p>
           <p>${l.type} | ${l.category} | ${l.propertyType}</p>
-          <p>₹${l.budget}</p>
+          <p>💰 ₹${l.budget || ""}</p>
           <p>Status: ${l.status || "new"}</p>
           <p>Assigned: ${l.assignedTo || "None"}</p>
           ${manageBtn}
@@ -318,183 +220,44 @@ function loadLeads(){
     }
 
   });
+
 }
 
-/* ADD LEAD */
+/* ➕ ADD LEAD */
 function addLead(){
 
-  let id = Date.now();
+  let nameVal = document.getElementById("name").value;
+  let phoneVal = document.getElementById("phone").value;
+  let typeVal = document.getElementById("type").value;
+  let categoryVal = document.getElementById("category").value;
+  let propertyTypeVal = document.getElementById("propertyType").value;
+  let budgetVal = document.getElementById("budget").value;
 
-  db.ref("leads/"+id).set({
-    name: name.value,
-    phone: phone.value,
-    type: type.value,
-    category: category.value,
-    propertyType: propertyType.value,
-    budget: budget.value,
-    assignedTo: "",
-    status: "new"
-  });
-
-  closePopup();
-}
-
-/* ASSIGN */
-function assignLead(id){
-
-  let user = prompt("Enter username to assign:");
-
-  if(!user) return;
-
-  db.ref("leads/"+id).update({
-    assignedTo: user
-  });
-
-}
-
-/* POPUP */
-function openPopup(){
-  document.getElementById("popup").style.display="flex";
-}
-
-function closePopup(){
-  document.getElementById("popup").style.display="none";
-}
-
-/* NAV */
-function go(p){ window.location.href=p; }
-
-</script>
-
-</body>
-</html>
-</div>
-
-<div class="main">
-
-  <div class="header">
-    <h1>All Leads</h1>
-    <button class="btn" onclick="openPopup()">+ Add Lead</button>
-  </div>
-
-  <div class="leads-container" id="leadsContainer"></div>
-
-</div>
-
-<!-- POPUP -->
-<div class="popup" id="popup">
-  <div class="popup-box">
-
-    <h3>Add Lead</h3>
-
-    <input id="name" placeholder="Name">
-    <input id="phone" placeholder="Phone">
-
-    <select id="type">
-      <option value="buy">Buy</option>
-      <option value="rent">Rent</option>
-    </select>
-
-    <select id="category">
-      <option value="residential">Residential</option>
-      <option value="commercial">Commercial</option>
-    </select>
-
-    <select id="propertyType">
-      <option value="house">House</option>
-      <option value="shop">Shop</option>
-      <option value="plot">Plot</option>
-    </select>
-
-    <input id="budget" placeholder="Budget">
-
-    <button onclick="addLead()">Save</button>
-
-  </div>
-</div>
-
-<script>
-
-/* FIREBASE CONFIG */
-const firebaseConfig = {
-  apiKey: "AIzaSyBHswtiTozfR5xVZUOWtg_pTNtXjiCQJF0",
-  authDomain: "deal-bridge-estates.firebaseapp.com",
-  databaseURL: "https://deal-bridge-estates-default-rtdb.firebaseio.com/",
-  projectId: "deal-bridge-estates"
-};
-
-firebase.initializeApp(firebaseConfig);
-
-const auth = firebase.auth();
-const db = firebase.database();
-
-/* 🔐 AUTH PROTECTION */
-auth.onAuthStateChanged(user=>{
-  if(!user){
-    window.location.href="index.html";
-  } else {
-    loadLeads();
+  if(!nameVal || !phoneVal){
+    alert("Please fill required fields");
+    return;
   }
-});
-
-/* LOAD LEADS */
-function loadLeads(){
-
-  db.ref("leads").on("value", snap=>{
-
-    let data = snap.val();
-    let container = document.getElementById("leadsContainer");
-    container.innerHTML = "";
-
-    for(let id in data){
-
-      let l = data[id];
-
-      let manageBtn = "";
-
-      if(!l.assignedTo){
-        manageBtn = `<button class="manage" onclick="assignLead('${id}')">Manage</button>`;
-      }
-
-      container.innerHTML += `
-        <div class="lead-card">
-          <h3>${l.name}</h3>
-          <p>${l.phone}</p>
-          <p>${l.type} | ${l.category} | ${l.propertyType}</p>
-          <p>₹${l.budget}</p>
-          <p>Status: ${l.status || "new"}</p>
-          <p>Assigned: ${l.assignedTo || "None"}</p>
-          ${manageBtn}
-        </div>
-      `;
-    }
-
-  });
-}
-
-/* ADD LEAD */
-function addLead(){
 
   let id = Date.now();
 
   db.ref("leads/"+id).set({
-    name: name.value,
-    phone: phone.value,
-    type: type.value,
-    category: category.value,
-    propertyType: propertyType.value,
-    budget: budget.value,
-    assignedTo: "",
-    status: "new"
+    name: nameVal,
+    phone: phoneVal,
+    type: typeVal,
+    category: categoryVal,
+    propertyType: propertyTypeVal,
+    budget: budgetVal,
+    status: "new",
+    assignedTo: ""
   });
 
   closePopup();
 }
 
-/* ASSIGN */
+/* 👤 ASSIGN */
 function assignLead(id){
 
-  let user = prompt("Enter username to assign:");
+  let user = prompt("Enter username (amit, raj etc):");
 
   if(!user) return;
 
