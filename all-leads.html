@@ -18,10 +18,7 @@ background:#1E293B;color:white;
 padding:20px;position:fixed;
 }
 .logo{font-size:22px;font-weight:700;margin-bottom:30px}
-.menu-item{
-padding:10px;margin:10px 0;
-border-radius:8px;cursor:pointer;
-}
+.menu-item{padding:10px;margin:10px 0;border-radius:8px;cursor:pointer;}
 .menu-item:hover,.active{background:#2563EB}
 
 /* Main */
@@ -39,7 +36,8 @@ cursor:pointer;
 /* Counter */
 .top-card{
 background:linear-gradient(135deg,#3B82F6,#1E40AF);
-color:white;padding:20px;border-radius:14px;margin-bottom:20px;
+color:white;padding:22px;border-radius:16px;margin-bottom:20px;
+box-shadow:0 10px 25px rgba(0,0,0,0.1);
 }
 
 /* Filters */
@@ -53,20 +51,57 @@ padding:10px;border-radius:8px;border:1px solid #ccc;
 /* Cards */
 .leads-container{
 display:grid;
-grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+grid-template-columns:repeat(auto-fill,minmax(340px,1fr));
 gap:20px;
 }
 
+/* NEW PROFESSIONAL CARD */
 .card{
 background:white;
-padding:18px;
-border-radius:14px;
-box-shadow:0 10px 25px rgba(0,0,0,0.05);
+padding:20px;
+border-radius:16px;
+box-shadow:0 12px 30px rgba(0,0,0,0.06);
+transition:0.2s;
 }
 
-/* NEW PROFESSIONAL LABEL STYLE */
-.label{font-size:12px;color:#64748B;}
-.value{margin-bottom:6px;font-size:14px;}
+.card:hover{
+transform:translateY(-3px);
+}
+
+.header-row{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:10px;
+}
+
+.name{
+font-size:18px;
+font-weight:600;
+}
+
+.badge{
+font-size:11px;
+padding:4px 8px;
+border-radius:6px;
+}
+
+.low{background:#E0F2FE;color:#0369A1;}
+.high{background:#FEE2E2;color:#B91C1C;}
+
+.section{
+margin-top:10px;
+}
+
+.label{
+font-size:11px;
+color:#64748B;
+}
+
+.value{
+font-size:14px;
+margin-bottom:6px;
+}
 
 .tag{
 display:inline-block;
@@ -78,58 +113,41 @@ background:#DBEAFE;
 }
 
 .status-tag{
-display:inline-block;
-padding:4px 8px;
-border-radius:6px;
-font-size:11px;
-background:#DCFCE7;
-margin-top:5px;
+margin-top:6px;
+font-size:12px;
+color:#16A34A;
+font-weight:500;
 }
 
 .manage{
-margin-top:10px;
+margin-top:12px;
 width:100%;
-padding:8px;
+padding:10px;
 background:#22C55E;
-color:white;border:none;border-radius:8px;
+color:white;border:none;border-radius:10px;
 cursor:pointer;
 }
 
-/* Popup */
-.popup{
-position:fixed;top:0;left:0;width:100%;height:100%;
+/* Popup unchanged */
+.popup{position:fixed;top:0;left:0;width:100%;height:100%;
 background:rgba(0,0,0,0.5);
-display:none;justify-content:center;align-items:center;
-}
+display:none;justify-content:center;align-items:center;}
 
 .popup-box{
-background:white;
-padding:25px;
-border-radius:14px;
-width:380px;
-max-height:90vh;
-overflow-y:auto;
+background:white;padding:25px;border-radius:14px;
+width:380px;max-height:90vh;overflow-y:auto;
 }
 
 .popup input,.popup select,.popup textarea{
-width:100%;
-padding:10px;
-margin-bottom:12px;
-border-radius:8px;
-border:1px solid #ccc;
+width:100%;padding:10px;margin-bottom:12px;
+border-radius:8px;border:1px solid #ccc;
 }
 
 .actions{display:flex;gap:10px;}
 
-.save-btn{
-flex:1;padding:10px;
-background:#2563EB;color:white;border:none;border-radius:8px;
-}
+.save-btn{flex:1;padding:10px;background:#2563EB;color:white;border:none;border-radius:8px;}
+.cancel-btn{flex:1;padding:10px;background:#E2E8F0;border:none;border-radius:8px;}
 
-.cancel-btn{
-flex:1;padding:10px;
-background:#E2E8F0;border:none;border-radius:8px;
-}
 </style>
 </head>
 
@@ -137,7 +155,6 @@ background:#E2E8F0;border:none;border-radius:8px;
 
 <div class="sidebar">
 <div class="logo">DealBridge Estates</div>
-
 <div class="menu-item" onclick="go('dashboard.html')">Dashboard</div>
 <div class="menu-item" onclick="go('my-leads.html')">My Leads</div>
 <div class="menu-item" onclick="go('my-day.html')">My Day</div>
@@ -159,6 +176,12 @@ background:#E2E8F0;border:none;border-radius:8px;
 
 <div class="filters">
 <input id="search" placeholder="Search..." oninput="render()">
+
+<select id="urgencyFilter" onchange="render()">
+<option value="">All Urgency</option>
+<option value="low">Low</option>
+<option value="high">High</option>
+</select>
 
 <select id="typeFilter" onchange="render()">
 <option value="">All Type</option>
@@ -198,49 +221,6 @@ background:#E2E8F0;border:none;border-radius:8px;
 
 </div>
 
-<!-- POPUP SAME (UNCHANGED) -->
-<div class="popup" id="popup">
-<div class="popup-box">
-<h3>Add Lead</h3>
-
-<input id="name" placeholder="Client Name">
-<input id="phone" placeholder="Phone Number">
-<input id="location" placeholder="Location">
-
-<input id="area" placeholder="Area">
-<input id="budgetMin" placeholder="Budget Min">
-<input id="budgetMax" placeholder="Budget Max">
-
-<select id="type">
-<option value="buy">Buy</option>
-<option value="rent">Rent</option>
-</select>
-
-<select id="category">
-<option value="residential">Residential</option>
-<option value="commercial">Commercial</option>
-</select>
-
-<select id="propertyType">
-<option value="house">House</option>
-<option value="shop">Shop</option>
-<option value="plot">Plot</option>
-</select>
-
-<select id="urgency">
-<option value="low">Low</option>
-<option value="high">High</option>
-</select>
-
-<textarea id="remark" placeholder="Remark"></textarea>
-
-<div class="actions">
-<button class="cancel-btn" onclick="closePopup()">Cancel</button>
-<button class="save-btn" onclick="addLead()">Save</button>
-</div>
-</div>
-</div>
-
 <script>
 
 const firebaseConfig={
@@ -259,12 +239,8 @@ let allLeads={};
 let currentUser="";
 
 auth.onAuthStateChanged(user=>{
-if(!user){
-window.location.href="index.html";
-}else{
-currentUser=user.email.split("@")[0];
-load();
-}
+if(!user){window.location.href="index.html";}
+else{currentUser=user.email.split("@")[0];load();}
 });
 
 function load(){
@@ -277,6 +253,7 @@ render();
 function render(){
 
 let search=val("search").toLowerCase();
+let urgencyF=val("urgencyFilter");
 let typeF=val("typeFilter");
 let catF=val("categoryFilter");
 let propF=val("propertyFilter");
@@ -293,6 +270,7 @@ Object.keys(allLeads).forEach(id=>{
 let l=allLeads[id];
 
 if(search && !l.name.toLowerCase().includes(search)) return;
+if(urgencyF && l.urgency!==urgencyF) return;
 if(typeF && l.type!==typeF) return;
 if(catF && l.category!==catF) return;
 if(propF && l.propertyType!==propF) return;
@@ -311,35 +289,39 @@ btn=`<button class="manage" onclick="assign('${id}')">Assign to Me</button>`;
 container.innerHTML+=`
 <div class="card">
 
-<h3>${l.name}</h3>
+<div class="header-row">
+<div class="name">${l.name}</div>
+<div class="badge ${l.urgency}">${l.urgency}</div>
+</div>
 
-<div class="label">📱 Phone</div>
+<div class="section">
+<div class="label">Phone</div>
 <div class="value">${l.phone}</div>
 
-<div class="label">📍 Location</div>
+<div class="label">Location</div>
 <div class="value">${l.location || "-"}</div>
 
-<div class="label">📐 Area</div>
+<div class="label">Area</div>
 <div class="value">${l.area || "-"}</div>
+</div>
 
-<div>
+<div class="section">
 <span class="tag">${l.type}</span>
 <span class="tag">${l.category}</span>
 <span class="tag">${l.propertyType}</span>
 </div>
 
-<div class="label">💰 Budget</div>
+<div class="section">
+<div class="label">Budget</div>
 <div class="value">₹${l.budgetMin || "-"} - ${l.budgetMax || "-"}</div>
 
-<div class="label">⚡ Urgency</div>
-<div class="value">${l.urgency || "-"}</div>
-
-<div class="label">📝 Remark</div>
+<div class="label">Remark</div>
 <div class="value">${l.remark || "-"}</div>
+</div>
 
 <div class="status-tag">Status: ${l.status}</div>
 
-<p><b>Assigned:</b> ${l.assignedTo || "None"}</p>
+<div class="value"><b>Assigned:</b> ${l.assignedTo || "None"}</div>
 
 ${btn}
 
@@ -350,31 +332,8 @@ ${btn}
 document.getElementById("totalLeads").innerText = count + " Leads";
 }
 
-/* ✅ UPDATED ASSIGN FUNCTION */
-function assign(id){
-
-db.ref("leads/"+id).update({assignedTo:currentUser});
-
-/* 🔥 INCREASE USER LEADS COUNT */
-let ref = db.ref("users/"+currentUser+"/leads");
-
-ref.once("value").then(s=>{
-let current = s.val() || 0;
-ref.set(current + 1);
-});
-
-}
-
 function val(id){return document.getElementById(id).value}
-
-function clearForm(){
-document.querySelectorAll(".popup input, .popup textarea").forEach(i=>i.value="");
-}
-
-function go(page){window.location.href=page;}
-
-function openPopup(){popup.style.display="flex";}
-function closePopup(){popup.style.display="none";}
+function go(p){window.location.href=p;}
 
 </script>
 
