@@ -12,35 +12,33 @@
 body{background:#F1F5F9;display:none}
 
 /* Sidebar */
-.sidebar{
-width:180px;height:100vh;
-background:#1E293B;color:white;
-padding:20px;position:fixed;
-}
+.sidebar{width:180px;height:100vh;background:#1E293B;color:white;padding:20px;position:fixed}
 .logo{font-size:22px;font-weight:700;margin-bottom:30px}
-.menu-item{
-padding:10px;margin:10px 0;border-radius:8px;cursor:pointer;
-}
+.menu-item{padding:10px;margin:10px 0;border-radius:8px;cursor:pointer}
 .menu-item:hover,.active{background:#2563EB}
 
 /* Main */
 .main{margin-left:200px;padding:25px}
 
 /* Header */
-.header{
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:20px;
+.header{display:flex;justify-content:space-between;margin-bottom:20px}
+
+/* Filters */
+.filters{
+display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;
+}
+.filters input,.filters select{
+padding:10px;border-radius:8px;border:1px solid #ccc;
 }
 
-/* Cards */
+/* Grid */
 .grid{
 display:grid;
-grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+grid-template-columns:repeat(auto-fill,minmax(340px,1fr));
 gap:20px;
 }
 
+/* Card */
 .card{
 background:white;
 padding:18px;
@@ -57,12 +55,12 @@ margin-right:5px;
 background:#DBEAFE;
 }
 
-/* Status */
-.status{
-margin-top:10px;
+/* Inputs */
+.input{
 width:100%;
 padding:6px;
-border-radius:6px;
+margin-top:5px;
+margin-bottom:5px;
 }
 
 /* Buttons */
@@ -92,8 +90,8 @@ cursor:pointer;
 <div class="logo">DealBridge Estates</div>
 
 <div class="menu-item" onclick="go('dashboard.html')">Dashboard</div>
-<div class="menu-item" onclick="go('my-day.html')">My Day</div>
 <div class="menu-item active">My Leads</div>
+<div class="menu-item" onclick="go('my-day.html')">My Day</div>
 <div class="menu-item" onclick="go('followups.html')">All Leads</div>
 <div class="menu-item" onclick="go('properties.html')">Properties</div>
 
@@ -103,6 +101,38 @@ cursor:pointer;
 
 <div class="header">
 <h1>My Leads</h1>
+</div>
+
+<!-- FILTERS -->
+<div class="filters">
+<input id="search" placeholder="Search..." oninput="render()">
+
+<select id="typeFilter" onchange="render()">
+<option value="">All Type</option>
+<option value="buy">Buy</option>
+<option value="rent">Rent</option>
+</select>
+
+<select id="categoryFilter" onchange="render()">
+<option value="">All Category</option>
+<option value="residential">Residential</option>
+<option value="commercial">Commercial</option>
+</select>
+
+<select id="propertyFilter" onchange="render()">
+<option value="">All Property</option>
+<option value="house">House</option>
+<option value="shop">Shop</option>
+<option value="plot">Plot</option>
+</select>
+
+<select id="statusFilter" onchange="render()">
+<option value="">All Status</option>
+<option value="new">New</option>
+<option value="contacted">Contacted</option>
+<option value="visit">Visit</option>
+<option value="closed">Closed</option>
+</select>
 </div>
 
 <div class="grid" id="container"></div>
@@ -124,32 +154,49 @@ const db=firebase.database();
 const auth=firebase.auth();
 
 let currentUser="";
+let allLeads={};
 
-/* AUTH */
 auth.onAuthStateChanged(user=>{
 if(!user){
 window.location.href="index.html";
 }else{
 document.body.style.display="block";
 currentUser=user.email.split("@")[0];
-loadLeads();
+load();
 }
 });
 
-/* LOAD ONLY MY LEADS */
-function loadLeads(){
-
+/* LOAD */
+function load(){
 db.ref("leads").on("value",snap=>{
-let data=snap.val()||{};
+allLeads=snap.val()||{};
+render();
+});
+}
+
+/* RENDER */
+function render(){
+
+let search=val("search").toLowerCase();
+let typeF=val("typeFilter");
+let catF=val("categoryFilter");
+let propF=val("propertyFilter");
+let statusF=val("statusFilter");
+
 let container=document.getElementById("container");
 container.innerHTML="";
 
-Object.keys(data).forEach(id=>{
+Object.keys(allLeads).forEach(id=>{
 
-let l=data[id];
+let l=allLeads[id];
 
-/* ONLY MY LEADS */
-if(l.assignedTo !== currentUser) return;
+if(l.assignedTo!==currentUser) return;
+
+if(search && !l.name.toLowerCase().includes(search)) return;
+if(typeF && l.type!==typeF) return;
+if(catF && l.category!==catF) return;
+if(propF && l.propertyType!==propF) return;
+if(statusF && l.status!==statusF) return;
 
 container.innerHTML+=`
 <div class="card">
@@ -158,21 +205,31 @@ container.innerHTML+=`
 <p>${l.phone}</p>
 <p>${l.location || ""}</p>
 
-<div style="margin:8px 0">
+<div>
 <span class="tag">${l.type}</span>
 <span class="tag">${l.category}</span>
 <span class="tag">${l.propertyType}</span>
 </div>
 
 <p>₹${l.budgetMin || "-"} - ${l.budgetMax || "-"}</p>
-<p>Area: ${l.area || "-"}</p>
 
-<select class="status" onchange="updateStatus('${id}',this.value)">
+<!-- STATUS -->
+<select onchange="updateStatus('${id}',this.value)">
 <option ${l.status==="new"?"selected":""}>new</option>
 <option ${l.status==="contacted"?"selected":""}>contacted</option>
 <option ${l.status==="visit"?"selected":""}>visit</option>
 <option ${l.status==="closed"?"selected":""}>closed</option>
 </select>
+
+<!-- CALL SCHEDULE -->
+<label>📞 Call</label>
+<input class="input" type="date" value="${l.callDate || ""}" onchange="updateField('${id}','callDate',this.value)">
+<input class="input" type="time" value="${l.callTime || ""}" onchange="updateField('${id}','callTime',this.value)">
+
+<!-- VISIT -->
+<label>🏠 Visit</label>
+<input class="input" type="date" value="${l.visitDate || ""}" onchange="updateField('${id}','visitDate',this.value)">
+<input class="input" type="time" value="${l.visitTime || ""}" onchange="updateField('${id}','visitTime',this.value)">
 
 <div class="actions">
 <button class="btn convert" onclick="convert('${id}')">Convert</button>
@@ -181,47 +238,38 @@ container.innerHTML+=`
 
 </div>
 `;
-
 });
-
-});
-
 }
 
-/* UPDATE STATUS */
+/* UPDATE FIELD */
+function updateField(id,field,value){
+db.ref("leads/"+id+"/"+field).set(value);
+}
+
+/* STATUS */
 function updateStatus(id,status){
 db.ref("leads/"+id).update({status});
 }
 
-/* CONVERT TO DEAL */
+/* CONVERT */
 function convert(id){
-
 db.ref("leads/"+id).once("value").then(snap=>{
 let data=snap.val();
-
-/* MOVE TO DEALS */
 db.ref("deals/"+id).set(data);
-
-/* REMOVE FROM LEADS */
 db.ref("leads/"+id).remove();
-
 });
-
 }
 
-/* LEAVE LEAD */
+/* LEAVE */
 function leave(id){
-
-db.ref("leads/"+id).update({
-assignedTo:""
-});
-
+db.ref("leads/"+id).update({assignedTo:""});
 }
+
+/* HELPERS */
+function val(id){return document.getElementById(id).value}
 
 /* NAV */
-function go(p){
-window.location.href=p;
-}
+function go(p){window.location.href=p;}
 
 </script>
 
