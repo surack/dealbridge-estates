@@ -12,49 +12,64 @@
 body{background:#F1F5F9}
 
 /* Sidebar */
-.sidebar{width:180px;height:100vh;background:#1E293B;color:#fff;padding:20px;position:fixed}
+.sidebar{width:180px;height:100vh;background:#1E293B;color:white;padding:20px;position:fixed}
 .logo{font-size:22px;font-weight:700;margin-bottom:30px}
 .menu-item{padding:10px;margin:10px 0;border-radius:8px;cursor:pointer}
 .menu-item:hover,.active{background:#2563EB}
 
 /* Main */
-.main{margin-left:200px;padding:20px}
+.main{margin-left:200px;padding:25px}
 
 /* Header */
-.header{display:flex;justify-content:space-between;margin-bottom:15px}
-.btn{padding:10px;background:#2563EB;color:white;border:none;border-radius:6px}
-
-/* Filters */
-.filters{
-display:flex;
-gap:10px;
-margin-bottom:15px;
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.btn{
+padding:10px 16px;
+background:linear-gradient(135deg,#2563EB,#1E40AF);
+color:white;border:none;border-radius:8px;cursor:pointer;
 }
 
-.filters select, .filters input{
-padding:8px;
-border-radius:6px;
-border:1px solid #ccc;
+/* Filters */
+.filters{display:flex;gap:10px;margin-bottom:20px}
+.filters input,.filters select{
+padding:10px;border-radius:8px;border:1px solid #ccc;
 }
 
 /* Cards */
 .leads-container{
 display:grid;
-grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
-gap:15px;
+grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+gap:20px;
 }
 
-.lead-card{
+.card{
 background:white;
-padding:15px;
-border-radius:12px;
-box-shadow:0 6px 15px rgba(0,0,0,0.05);
+padding:18px;
+border-radius:14px;
+box-shadow:0 10px 25px rgba(0,0,0,0.05);
+transition:0.3s;
 }
 
-/* Status dropdown */
-.status-select{
-margin-top:8px;
-padding:5px;
+.card:hover{transform:translateY(-4px)}
+
+.title{font-size:18px;font-weight:600}
+.meta{font-size:13px;color:#64748B;margin-bottom:8px}
+
+.tag{
+display:inline-block;
+padding:4px 8px;
+border-radius:6px;
+font-size:11px;
+margin-right:5px;
+background:#DBEAFE;
+}
+
+.manage{
+margin-top:12px;
+width:100%;
+padding:8px;
+background:#22C55E;
+color:white;border:none;border-radius:8px;
+cursor:pointer;
 }
 
 /* Popup */
@@ -66,51 +81,47 @@ display:none;justify-content:center;align-items:center;
 
 .popup-box{
 background:white;
-padding:20px;
-border-radius:12px;
-width:350px;
+padding:25px;
+border-radius:14px;
+width:380px;
 }
 
 .popup input,.popup select{
 width:100%;
-padding:8px;
-margin-bottom:8px;
+padding:10px;
+margin-bottom:10px;
+border-radius:8px;
+border:1px solid #ccc;
 }
+
+.actions{display:flex;justify-content:space-between}
 </style>
 </head>
 
 <body>
 
 <div class="sidebar">
-  <div class="logo">DealBridge Estates</div>
-  <div class="menu-item">Dashboard</div>
-  <div class="menu-item">My Leads</div>
-  <div class="menu-item">My Day</div>
-  <div class="menu-item active">All Leads</div>
+<div class="logo">DealBridge Estates</div>
+<div class="menu-item">Dashboard</div>
+<div class="menu-item">My Leads</div>
+<div class="menu-item">My Day</div>
+<div class="menu-item active">All Leads</div>
 </div>
 
 <div class="main">
 
 <div class="header">
-  <h1>All Leads</h1>
-  <button class="btn" onclick="openPopup()">+ Add Lead</button>
+<h1>All Leads</h1>
+<button class="btn" onclick="openPopup()">+ Add Lead</button>
 </div>
 
-<!-- FILTERS -->
 <div class="filters">
-  <input type="text" id="search" placeholder="Search..." oninput="applyFilters()">
-
-  <select id="filterType" onchange="applyFilters()">
-    <option value="">All Type</option>
-    <option value="buy">Buy</option>
-    <option value="rent">Rent</option>
-  </select>
-
-  <select id="filterUrgency" onchange="applyFilters()">
-    <option value="">All Urgency</option>
-    <option value="high">High</option>
-    <option value="low">Low</option>
-  </select>
+<input id="search" placeholder="Search..." oninput="render()">
+<select id="typeFilter" onchange="render()">
+<option value="">All</option>
+<option value="buy">Buy</option>
+<option value="rent">Rent</option>
+</select>
 </div>
 
 <div class="leads-container" id="leadsContainer"></div>
@@ -147,8 +158,10 @@ margin-bottom:8px;
 <option value="high">High</option>
 </select>
 
-<button onclick="addLead()">Save</button>
+<div class="actions">
 <button onclick="closePopup()">Cancel</button>
+<button onclick="addLead()">Save</button>
+</div>
 
 </div>
 </div>
@@ -164,11 +177,11 @@ projectId:"deal-bridge-estates"
 
 firebase.initializeApp(firebaseConfig);
 
-const auth=firebase.auth();
 const db=firebase.database();
+const auth=firebase.auth();
 
-let allLeads={};
 let currentUser="";
+let allLeads={};
 
 /* AUTH */
 auth.onAuthStateChanged(user=>{
@@ -176,24 +189,23 @@ if(!user){
 window.location.href="index.html";
 }else{
 currentUser=user.email.split("@")[0];
-loadLeads();
+load();
 }
 });
 
 /* LOAD */
-function loadLeads(){
+function load(){
 db.ref("leads").on("value",snap=>{
 allLeads=snap.val()||{};
-applyFilters();
+render();
 });
 }
 
-/* FILTER + SEARCH */
-function applyFilters(){
+/* RENDER */
+function render(){
 
 let search=document.getElementById("search").value.toLowerCase();
-let type=document.getElementById("filterType").value;
-let urgency=document.getElementById("filterUrgency").value;
+let typeFilter=document.getElementById("typeFilter").value;
 
 let container=document.getElementById("leadsContainer");
 container.innerHTML="";
@@ -202,48 +214,67 @@ Object.keys(allLeads).forEach(id=>{
 
 let l=allLeads[id];
 
-if(search && !(l.name.toLowerCase().includes(search) || l.phone.includes(search) || l.location.toLowerCase().includes(search))) return;
-if(type && l.type!==type) return;
-if(urgency && l.urgency!==urgency) return;
+if(search && !l.name.toLowerCase().includes(search)) return;
+if(typeFilter && l.type!==typeFilter) return;
 
-let btn="";
-if(!l.assignedTo){
-btn=`<button onclick="assignLead('${id}')">Assign</button>`;
-}
+let statusUI="";
 
-container.innerHTML+=`
-<div class="lead-card">
-<h3>${l.name}</h3>
-<p>${l.phone}</p>
-<p>${l.location}</p>
-<p>₹${l.budgetMin}-${l.budgetMax}</p>
-<p>ID: ${l.leadId}</p>
-
-<select class="status-select" onchange="updateStatus('${id}',this.value)">
+/* 🔐 ONLY ASSIGNED USER CAN EDIT */
+if(l.assignedTo===currentUser){
+statusUI=`
+<select onchange="updateStatus('${id}',this.value)">
 <option ${l.status==="new"?"selected":""}>new</option>
 <option ${l.status==="contacted"?"selected":""}>contacted</option>
 <option ${l.status==="visit"?"selected":""}>visit</option>
 <option ${l.status==="closed"?"selected":""}>closed</option>
-</select>
+</select>`;
+}else{
+statusUI=`<p>Status: ${l.status}</p>`;
+}
+
+let assignBtn="";
+if(!l.assignedTo){
+assignBtn=`<button class="manage" onclick="assign('${id}')">Assign to Me</button>`;
+}
+
+container.innerHTML+=`
+<div class="card">
+
+<div class="title">${l.name}</div>
+<div class="meta">${l.phone} • ${l.location}</div>
+
+<div>
+<span class="tag">${l.type}</span>
+<span class="tag">${l.propertyType}</span>
+<span class="tag">${l.urgency}</span>
+</div>
+
+<p style="margin-top:10px">₹${l.budgetMin}-${l.budgetMax}</p>
+<p>ID: ${l.leadId}</p>
+
+${statusUI}
 
 <p>Assigned: ${l.assignedTo || "None"}</p>
 
-${btn}
+${assignBtn}
+
 </div>
 `;
 });
 }
 
-/* ADD */
+/* ADD LEAD */
 async function addLead(){
 
 let name=document.getElementById("name").value.trim();
 let phone=document.getElementById("phone").value.trim();
 
 if(!name || !phone){
-alert("Fill required fields");
+alert("Enter name & phone");
 return;
 }
+
+try{
 
 let snap=await db.ref("meta/lastLeadId").get();
 let last=snap.exists()?snap.val():0;
@@ -270,14 +301,20 @@ assignedTo:""
 
 await db.ref("meta/lastLeadId").set(newId);
 
-/* clear */
+/* CLEAR */
 document.querySelectorAll(".popup input").forEach(i=>i.value="");
 
 closePopup();
+
+}catch(e){
+console.error(e);
+alert("Error saving lead");
+}
+
 }
 
 /* ASSIGN */
-function assignLead(id){
+function assign(id){
 db.ref("leads/"+id).update({assignedTo:currentUser});
 db.ref("users/"+currentUser+"/myLeads/"+id).set(true);
 }
