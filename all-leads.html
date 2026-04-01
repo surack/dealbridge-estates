@@ -446,6 +446,8 @@ document.querySelectorAll(".popup input, .popup textarea").forEach(i=>i.value=""
 
 function assign(id){
 db.ref("leads/"+id).update({assignedTo:currentUser});
+let ref=db.ref("users/"+currentUser+"/leads");
+ref.once("value").then(s=>{ref.set((s.val()||0)+1);});
 }
 
 function go(page){
