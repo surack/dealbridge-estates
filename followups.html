@@ -12,29 +12,16 @@
 body{background:#F1F5F9}
 
 /* Sidebar */
-.sidebar{
-width:180px;height:100vh;
-background:#1E293B;color:white;
-padding:20px;position:fixed;
-}
+.sidebar{width:180px;height:100vh;background:#1E293B;color:white;padding:20px;position:fixed}
 .logo{font-size:22px;font-weight:700;margin-bottom:30px}
 .menu-item{padding:10px;margin:10px 0;border-radius:8px;cursor:pointer}
 .menu-item:hover,.active{background:#2563EB}
 
 /* Main */
-.main{
-margin-left:200px;
-padding:25px;
-}
+.main{margin-left:200px;padding:25px}
 
 /* Header */
-.header{
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:20px;
-}
-
+.header{display:flex;justify-content:space-between;margin-bottom:20px}
 .btn{
 padding:10px 16px;
 background:linear-gradient(135deg,#2563EB,#1E40AF);
@@ -49,7 +36,6 @@ gap:10px;
 margin-bottom:20px;
 flex-wrap:wrap;
 }
-
 .filters input,.filters select{
 padding:10px;
 border-radius:8px;
@@ -68,13 +54,7 @@ background:white;
 padding:18px;
 border-radius:14px;
 box-shadow:0 10px 25px rgba(0,0,0,0.05);
-transition:0.3s;
 }
-
-.card:hover{transform:translateY(-4px)}
-
-.title{font-size:18px;font-weight:600}
-.meta{font-size:13px;color:#64748B;margin-bottom:8px}
 
 .tag{
 display:inline-block;
@@ -86,7 +66,7 @@ background:#DBEAFE;
 }
 
 .manage{
-margin-top:12px;
+margin-top:10px;
 width:100%;
 padding:8px;
 background:#22C55E;
@@ -96,32 +76,17 @@ cursor:pointer;
 
 /* Popup */
 .popup{
-position:fixed;
-top:0;left:0;width:100%;height:100%;
+position:fixed;top:0;left:0;width:100%;height:100%;
 background:rgba(0,0,0,0.5);
-display:none;
-justify-content:center;
-align-items:center;
+display:none;justify-content:center;align-items:center;
 }
 
 .popup-box{
-background:white;
-padding:25px;
-border-radius:14px;
-width:380px;
+background:white;padding:20px;border-radius:12px;width:350px;
 }
 
 .popup input,.popup select{
-width:100%;
-padding:10px;
-margin-bottom:10px;
-border-radius:8px;
-border:1px solid #ccc;
-}
-
-.actions{
-display:flex;
-justify-content:space-between;
+width:100%;padding:10px;margin-bottom:10px;border-radius:6px;border:1px solid #ccc;
 }
 </style>
 </head>
@@ -130,11 +95,10 @@ justify-content:space-between;
 
 <div class="sidebar">
 <div class="logo">DealBridge Estates</div>
-<div class="menu-item" onclick="go('dashboard.html')">Dashboard</div>
-<div class="menu-item" onclick="go('my-leads.html')">My Leads</div>
-<div class="menu-item" onclick="go('my-day.html')">My Day</div>
+<div class="menu-item">Dashboard</div>
+<div class="menu-item">My Leads</div>
+<div class="menu-item">My Day</div>
 <div class="menu-item active">All Leads</div>
-<div class="menu-item" onclick="go('properties.html')">Properties</div>
 </div>
 
 <div class="main">
@@ -166,6 +130,14 @@ justify-content:space-between;
 <option value="shop">Shop</option>
 <option value="plot">Plot</option>
 </select>
+
+<!-- ✅ NEW FILTER -->
+<select id="assignFilter" onchange="render()">
+<option value="">All Leads</option>
+<option value="unassigned">Unassigned</option>
+<option value="assigned">Assigned</option>
+</select>
+
 </div>
 
 <div class="leads-container" id="leadsContainer"></div>
@@ -181,10 +153,6 @@ justify-content:space-between;
 <input id="name" placeholder="Name">
 <input id="phone" placeholder="Phone">
 <input id="location" placeholder="Location">
-<input id="area" placeholder="Area">
-
-<input id="budgetMin" placeholder="Min Budget">
-<input id="budgetMax" placeholder="Max Budget">
 
 <select id="type">
 <option value="buy">Buy</option>
@@ -202,15 +170,8 @@ justify-content:space-between;
 <option value="plot">Plot</option>
 </select>
 
-<select id="urgency">
-<option value="low">Low</option>
-<option value="high">High</option>
-</select>
-
-<div class="actions">
-<button onclick="closePopup()">Cancel</button>
 <button onclick="addLead()">Save</button>
-</div>
+<button onclick="closePopup()">Cancel</button>
 
 </div>
 </div>
@@ -229,8 +190,8 @@ firebase.initializeApp(firebaseConfig);
 const db=firebase.database();
 const auth=firebase.auth();
 
-let currentUser="";
 let allLeads={};
+let currentUser="";
 
 /* AUTH */
 auth.onAuthStateChanged(user=>{
@@ -253,16 +214,16 @@ render();
 /* RENDER */
 function render(){
 
-let search=document.getElementById("search").value.toLowerCase();
-let typeF=document.getElementById("typeFilter").value;
-let catF=document.getElementById("categoryFilter").value;
-let propF=document.getElementById("propertyFilter").value;
+let search=searchInput();
+let typeF=val("typeFilter");
+let catF=val("categoryFilter");
+let propF=val("propertyFilter");
+let assignF=val("assignFilter");
 
 let container=document.getElementById("leadsContainer");
 container.innerHTML="";
 
 Object.keys(allLeads).forEach(id=>{
-
 let l=allLeads[id];
 
 if(search && !l.name.toLowerCase().includes(search)) return;
@@ -270,29 +231,19 @@ if(typeF && l.type!==typeF) return;
 if(catF && l.category!==catF) return;
 if(propF && l.propertyType!==propF) return;
 
-/* STATUS CONTROL */
-let statusUI="";
-if(l.assignedTo===currentUser){
-statusUI=`
-<select onchange="updateStatus('${id}',this.value)">
-<option ${l.status==="new"?"selected":""}>new</option>
-<option ${l.status==="contacted"?"selected":""}>contacted</option>
-<option ${l.status==="visit"?"selected":""}>visit</option>
-<option ${l.status==="closed"?"selected":""}>closed</option>
-</select>`;
-}else{
-statusUI=`<p>Status: ${l.status}</p>`;
-}
+if(assignF==="unassigned" && l.assignedTo) return;
+if(assignF==="assigned" && !l.assignedTo) return;
 
-let assignBtn="";
+let btn="";
 if(!l.assignedTo){
-assignBtn=`<button class="manage" onclick="assign('${id}')">Assign to Me</button>`;
+btn=`<button class="manage" onclick="assign('${id}')">Assign to Me</button>`;
 }
 
 container.innerHTML+=`
 <div class="card">
-<div class="title">${l.name}</div>
-<div class="meta">${l.phone} • ${l.location}</div>
+<h3>${l.name}</h3>
+<p>${l.phone}</p>
+<p>${l.location}</p>
 
 <div>
 <span class="tag">${l.type}</span>
@@ -300,20 +251,16 @@ container.innerHTML+=`
 <span class="tag">${l.propertyType}</span>
 </div>
 
-<p style="margin-top:10px">₹${l.budgetMin}-${l.budgetMax}</p>
 <p>ID: ${l.leadId}</p>
-
-${statusUI}
-
 <p>Assigned: ${l.assignedTo || "None"}</p>
 
-${assignBtn}
+${btn}
 </div>
 `;
 });
 }
 
-/* ADD LEAD (FINAL FIXED) */
+/* 🔥 FINAL ADD LEAD (100% WORKING) */
 function addLead(){
 
 let name=document.getElementById("name").value.trim();
@@ -324,49 +271,44 @@ alert("Enter name & phone");
 return;
 }
 
+/* SAFE UNIQUE ID */
 let key=db.ref("leads").push().key;
-let leadId="L"+Math.floor(1000+Math.random()*9000);
+let leadId="L-"+Date.now();
 
+/* SAVE */
 db.ref("leads/"+key).set({
 leadId,
 name,
 phone,
-location:location.value,
-area:area.value,
-budgetMin:budgetMin.value,
-budgetMax:budgetMax.value,
-type:type.value,
-category:category.value,
-propertyType:propertyType.value,
-urgency:urgency.value,
-status:"new",
+location:document.getElementById("location").value,
+type:val("type"),
+category:val("category"),
+propertyType:val("propertyType"),
 assignedTo:""
 }).then(()=>{
-document.querySelectorAll(".popup input").forEach(i=>i.value="");
+clearForm();
 closePopup();
 }).catch(err=>{
-console.error(err);
 alert(err.message);
 });
 
 }
 
+/* HELPERS */
+function val(id){return document.getElementById(id).value;}
+function searchInput(){return document.getElementById("search").value.toLowerCase();}
+function clearForm(){
+document.querySelectorAll(".popup input").forEach(i=>i.value="");
+}
+
 /* ASSIGN */
 function assign(id){
 db.ref("leads/"+id).update({assignedTo:currentUser});
-db.ref("users/"+currentUser+"/myLeads/"+id).set(true);
-}
-
-/* STATUS */
-function updateStatus(id,status){
-db.ref("leads/"+id).update({status});
 }
 
 /* POPUP */
 function openPopup(){popup.style.display="flex";}
 function closePopup(){popup.style.display="none";}
-
-function go(p){window.location.href=p;}
 
 </script>
 
