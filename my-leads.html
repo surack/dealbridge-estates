@@ -211,6 +211,9 @@ container.innerHTML+=`
 <span class="tag">${l.propertyType}</span>
 </div>
 
+<div class="label">📝 Remark</div>
+<div class="value">${l.remark || "-"}</div>
+
 <div class="label">📊 Status</div>
 <select class="input" onchange="updateStatus('${id}',this.value)">
 <option ${l.status==="new"?"selected":""}>new</option>
