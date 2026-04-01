@@ -20,13 +20,8 @@ body{background:#F1F5F9;display:none}
 /* Main */
 .main{margin-left:200px;padding:25px}
 
-/* Header */
-.header{display:flex;justify-content:space-between;margin-bottom:20px}
-
 /* Filters */
-.filters{
-display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;
-}
+.filters{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap}
 .filters input,.filters select{
 padding:10px;border-radius:8px;border:1px solid #ccc;
 }
@@ -46,6 +41,18 @@ border-radius:14px;
 box-shadow:0 10px 25px rgba(0,0,0,0.05);
 }
 
+/* Labels */
+.label{
+font-size:12px;
+color:#64748B;
+}
+
+.value{
+font-size:14px;
+margin-bottom:6px;
+}
+
+/* Tags */
 .tag{
 display:inline-block;
 padding:4px 8px;
@@ -59,8 +66,7 @@ background:#DBEAFE;
 .input{
 width:100%;
 padding:6px;
-margin-top:5px;
-margin-bottom:5px;
+margin-bottom:6px;
 }
 
 /* Buttons */
@@ -99,32 +105,8 @@ cursor:pointer;
 
 <div class="main">
 
-<div class="header">
-<h1>My Leads</h1>
-</div>
-
-<!-- FILTERS -->
 <div class="filters">
 <input id="search" placeholder="Search..." oninput="render()">
-
-<select id="typeFilter" onchange="render()">
-<option value="">All Type</option>
-<option value="buy">Buy</option>
-<option value="rent">Rent</option>
-</select>
-
-<select id="categoryFilter" onchange="render()">
-<option value="">All Category</option>
-<option value="residential">Residential</option>
-<option value="commercial">Commercial</option>
-</select>
-
-<select id="propertyFilter" onchange="render()">
-<option value="">All Property</option>
-<option value="house">House</option>
-<option value="shop">Shop</option>
-<option value="plot">Plot</option>
-</select>
 
 <select id="statusFilter" onchange="render()">
 <option value="">All Status</option>
@@ -178,9 +160,6 @@ render();
 function render(){
 
 let search=val("search").toLowerCase();
-let typeF=val("typeFilter");
-let catF=val("categoryFilter");
-let propF=val("propertyFilter");
 let statusF=val("statusFilter");
 
 let container=document.getElementById("container");
@@ -191,43 +170,51 @@ Object.keys(allLeads).forEach(id=>{
 let l=allLeads[id];
 
 if(l.assignedTo!==currentUser) return;
-
 if(search && !l.name.toLowerCase().includes(search)) return;
-if(typeF && l.type!==typeF) return;
-if(catF && l.category!==catF) return;
-if(propF && l.propertyType!==propF) return;
 if(statusF && l.status!==statusF) return;
 
 container.innerHTML+=`
 <div class="card">
 
 <h3>${l.name}</h3>
-<p>${l.phone}</p>
-<p>${l.location || ""}</p>
 
-<div>
+<div class="label">📱 Mobile</div>
+<div class="value">${l.phone}</div>
+
+<div class="label">📍 Location</div>
+<div class="value">${l.location || "-"}</div>
+
+<div class="label">📐 Area Required</div>
+<div class="value">${l.area || "-"}</div>
+
+<div class="label">💰 Budget</div>
+<div class="value">₹${l.budgetMin || "-"} - ₹${l.budgetMax || "-"}</div>
+
+<div class="label">🏷 Property</div>
+<div class="value">
 <span class="tag">${l.type}</span>
 <span class="tag">${l.category}</span>
 <span class="tag">${l.propertyType}</span>
 </div>
 
-<p>₹${l.budgetMin || "-"} - ${l.budgetMax || "-"}</p>
+<div class="label">📝 Remark</div>
+<div class="value">${l.remark || "-"}</div>
 
-<!-- STATUS -->
-<select onchange="updateStatus('${id}',this.value)">
+<div class="label">📊 Status</div>
+<select class="input" onchange="updateStatus('${id}',this.value)">
 <option ${l.status==="new"?"selected":""}>new</option>
 <option ${l.status==="contacted"?"selected":""}>contacted</option>
 <option ${l.status==="visit"?"selected":""}>visit</option>
 <option ${l.status==="closed"?"selected":""}>closed</option>
 </select>
 
-<!-- CALL SCHEDULE -->
-<label>📞 Call</label>
+<!-- CALL -->
+<div class="label">📞 Call Schedule</div>
 <input class="input" type="date" value="${l.callDate || ""}" onchange="updateField('${id}','callDate',this.value)">
 <input class="input" type="time" value="${l.callTime || ""}" onchange="updateField('${id}','callTime',this.value)">
 
 <!-- VISIT -->
-<label>🏠 Visit</label>
+<div class="label">🏠 Visit Schedule</div>
 <input class="input" type="date" value="${l.visitDate || ""}" onchange="updateField('${id}','visitDate',this.value)">
 <input class="input" type="time" value="${l.visitTime || ""}" onchange="updateField('${id}','visitTime',this.value)">
 
@@ -253,11 +240,20 @@ db.ref("leads/"+id).update({status});
 
 /* CONVERT */
 function convert(id){
+
+let now=new Date();
+
 db.ref("leads/"+id).once("value").then(snap=>{
 let data=snap.val();
+
+data.convertedDate=now.toISOString().split("T")[0];
+data.convertedTime=now.toLocaleTimeString();
+
 db.ref("deals/"+id).set(data);
 db.ref("leads/"+id).remove();
+
 });
+
 }
 
 /* LEAVE */
@@ -267,8 +263,6 @@ db.ref("leads/"+id).update({assignedTo:""});
 
 /* HELPERS */
 function val(id){return document.getElementById(id).value}
-
-/* NAV */
 function go(p){window.location.href=p;}
 
 </script>
