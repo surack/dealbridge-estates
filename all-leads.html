@@ -12,7 +12,11 @@
 body{background:#F1F5F9}
 
 /* Sidebar */
-.sidebar{width:180px;height:100vh;background:#1E293B;color:white;padding:20px;position:fixed;}
+.sidebar{
+width:180px;height:100vh;
+background:#1E293B;color:white;
+padding:20px;position:fixed;
+}
 .logo{font-size:22px;font-weight:700;margin-bottom:30px}
 .menu-item{padding:10px;margin:10px 0;border-radius:8px;cursor:pointer;}
 .menu-item:hover,.active{background:#2563EB}
@@ -22,31 +26,128 @@ body{background:#F1F5F9}
 
 /* Header */
 .header{display:flex;justify-content:space-between;margin-bottom:20px}
-.btn{padding:10px 16px;background:#2563EB;color:white;border:none;border-radius:8px;cursor:pointer}
+.btn{
+padding:10px 16px;
+background:linear-gradient(135deg,#2563EB,#1E40AF);
+color:white;border:none;border-radius:8px;
+cursor:pointer;
+}
 
 /* Counter */
-.top-card{background:#2563EB;color:white;padding:20px;border-radius:14px;margin-bottom:20px}
+.top-card{
+background:linear-gradient(135deg,#3B82F6,#1E40AF);
+color:white;padding:22px;border-radius:16px;margin-bottom:20px;
+box-shadow:0 10px 25px rgba(0,0,0,0.1);
+}
 
 /* Filters */
-.filters{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
-.filters input,.filters select{padding:10px;border-radius:8px;border:1px solid #ccc;}
+.filters{
+display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;
+}
+.filters input,.filters select{
+padding:10px;border-radius:8px;border:1px solid #ccc;
+}
 
 /* Cards */
-.leads-container{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px;}
+.leads-container{
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(340px,1fr));
+gap:20px;
+}
 
-.card{background:white;padding:18px;border-radius:14px;box-shadow:0 10px 25px rgba(0,0,0,0.05);}
+/* NEW PROFESSIONAL CARD */
+.card{
+background:white;
+padding:20px;
+border-radius:16px;
+box-shadow:0 12px 30px rgba(0,0,0,0.06);
+transition:0.2s;
+}
 
-.tag{padding:4px 8px;border-radius:6px;font-size:11px;background:#DBEAFE;margin-right:5px;}
-.manage{margin-top:10px;width:100%;padding:8px;background:#22C55E;color:white;border:none;border-radius:8px;cursor:pointer;}
+.card:hover{
+transform:translateY(-3px);
+}
 
-.popup{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);display:none;justify-content:center;align-items:center;}
-.popup-box{background:white;padding:25px;border-radius:14px;width:380px;max-height:90vh;overflow-y:auto;}
+.header-row{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:10px;
+}
 
-.popup input,.popup select,.popup textarea{width:100%;padding:10px;margin-bottom:10px;border-radius:8px;border:1px solid #ccc;}
+.name{
+font-size:18px;
+font-weight:600;
+}
+
+.badge{
+font-size:11px;
+padding:4px 8px;
+border-radius:6px;
+}
+
+.low{background:#E0F2FE;color:#0369A1;}
+.high{background:#FEE2E2;color:#B91C1C;}
+
+.section{
+margin-top:10px;
+}
+
+.label{
+font-size:11px;
+color:#64748B;
+}
+
+.value{
+font-size:14px;
+margin-bottom:6px;
+}
+
+.tag{
+display:inline-block;
+padding:4px 8px;
+border-radius:6px;
+font-size:11px;
+margin-right:5px;
+background:#DBEAFE;
+}
+
+.status-tag{
+margin-top:6px;
+font-size:12px;
+color:#16A34A;
+font-weight:500;
+}
+
+.manage{
+margin-top:12px;
+width:100%;
+padding:10px;
+background:#22C55E;
+color:white;border:none;border-radius:10px;
+cursor:pointer;
+}
+
+/* Popup unchanged */
+.popup{position:fixed;top:0;left:0;width:100%;height:100%;
+background:rgba(0,0,0,0.5);
+display:none;justify-content:center;align-items:center;}
+
+.popup-box{
+background:white;padding:25px;border-radius:14px;
+width:380px;max-height:90vh;overflow-y:auto;
+}
+
+.popup input,.popup select,.popup textarea{
+width:100%;padding:10px;margin-bottom:12px;
+border-radius:8px;border:1px solid #ccc;
+}
 
 .actions{display:flex;gap:10px;}
+
 .save-btn{flex:1;padding:10px;background:#2563EB;color:white;border:none;border-radius:8px;}
 .cancel-btn{flex:1;padding:10px;background:#E2E8F0;border:none;border-radius:8px;}
+
 </style>
 </head>
 
@@ -70,45 +171,54 @@ body{background:#F1F5F9}
 
 <div class="top-card">
 <h2 id="totalLeads">0 Leads</h2>
+<p>Total available leads</p>
 </div>
 
 <div class="filters">
 <input id="search" placeholder="Search..." oninput="render()">
+
+<select id="urgencyFilter" onchange="render()">
+<option value="">All Urgency</option>
+<option value="low">Low</option>
+<option value="high">High</option>
+</select>
+
 <select id="typeFilter" onchange="render()">
-<option value="">All</option><option value="buy">Buy</option><option value="rent">Rent</option>
+<option value="">All Type</option>
+<option value="buy">Buy</option>
+<option value="rent">Rent</option>
+</select>
+
+<select id="categoryFilter" onchange="render()">
+<option value="">All Category</option>
+<option value="residential">Residential</option>
+<option value="commercial">Commercial</option>
+</select>
+
+<select id="propertyFilter" onchange="render()">
+<option value="">All Property</option>
+<option value="house">House</option>
+<option value="shop">Shop</option>
+<option value="plot">Plot</option>
+</select>
+
+<select id="statusFilter" onchange="render()">
+<option value="">All Status</option>
+<option value="new">New</option>
+<option value="contacted">Contacted</option>
+<option value="visit">Visit</option>
+<option value="closed">Closed</option>
+</select>
+
+<select id="assignFilter" onchange="render()">
+<option value="">All Leads</option>
+<option value="unassigned">Unassigned</option>
+<option value="assigned">Assigned</option>
 </select>
 </div>
 
 <div class="leads-container" id="leadsContainer"></div>
 
-</div>
-
-<!-- POPUP -->
-<div class="popup" id="popup">
-<div class="popup-box">
-
-<h3>Add Lead</h3>
-
-<input id="name" placeholder="Name">
-<input id="phone" placeholder="Phone">
-<input id="location" placeholder="Location">
-<input id="area" placeholder="Area">
-<input id="budgetMin" placeholder="Budget Min">
-<input id="budgetMax" placeholder="Budget Max">
-
-<select id="type"><option value="buy">Buy</option><option value="rent">Rent</option></select>
-<select id="category"><option value="residential">Residential</option><option value="commercial">Commercial</option></select>
-<select id="propertyType"><option value="house">House</option><option value="shop">Shop</option><option value="plot">Plot</option></select>
-<select id="urgency"><option value="low">Low</option><option value="high">High</option></select>
-
-<textarea id="remark" placeholder="Remark"></textarea>
-
-<div class="actions">
-<button class="cancel-btn" onclick="closePopup()">Cancel</button>
-<button class="save-btn" onclick="addLead()">Save</button>
-</div>
-
-</div>
 </div>
 
 <script>
@@ -121,18 +231,18 @@ projectId:"deal-bridge-estates"
 };
 
 firebase.initializeApp(firebaseConfig);
+
 const db=firebase.database();
 const auth=firebase.auth();
 
-let allLeads={}, currentUser="";
+let allLeads={};
+let currentUser="";
 
-/* AUTH */
 auth.onAuthStateChanged(user=>{
 if(!user){window.location.href="index.html";}
 else{currentUser=user.email.split("@")[0];load();}
 });
 
-/* LOAD */
 function load(){
 db.ref("leads").on("value",snap=>{
 allLeads=snap.val()||{};
@@ -140,28 +250,81 @@ render();
 });
 }
 
-/* RENDER */
 function render(){
+
+let search=val("search").toLowerCase();
+let urgencyF=val("urgencyFilter");
+let typeF=val("typeFilter");
+let catF=val("categoryFilter");
+let propF=val("propertyFilter");
+let statusF=val("statusFilter");
+let assignF=val("assignFilter");
+
 let container=document.getElementById("leadsContainer");
 container.innerHTML="";
+
 let count=0;
 
 Object.keys(allLeads).forEach(id=>{
+
 let l=allLeads[id];
+
+if(search && !l.name.toLowerCase().includes(search)) return;
+if(urgencyF && l.urgency!==urgencyF) return;
+if(typeF && l.type!==typeF) return;
+if(catF && l.category!==catF) return;
+if(propF && l.propertyType!==propF) return;
+if(statusF && l.status!==statusF) return;
+
+if(assignF==="unassigned" && l.assignedTo) return;
+if(assignF==="assigned" && !l.assignedTo) return;
+
 count++;
 
-let btn = !l.assignedTo ? `<button class="manage" onclick="assign('${id}')">Assign to Me</button>` : "";
+let btn="";
+if(!l.assignedTo){
+btn=`<button class="manage" onclick="assign('${id}')">Assign to Me</button>`;
+}
 
 container.innerHTML+=`
 <div class="card">
-<h3>${l.name}</h3>
-<p>${l.phone}</p>
-<p>${l.location||""}</p>
-<p><b>Area:</b> ${l.area||"-"}</p>
-<p><b>Urgency:</b> ${l.urgency||"-"}</p>
-<p><b>Remark:</b> ${l.remark||"-"}</p>
-<p><b>Assigned:</b> ${l.assignedTo||"None"}</p>
+
+<div class="header-row">
+<div class="name">${l.name}</div>
+<div class="badge ${l.urgency}">${l.urgency}</div>
+</div>
+
+<div class="section">
+<div class="label">Phone</div>
+<div class="value">${l.phone}</div>
+
+<div class="label">Location</div>
+<div class="value">${l.location || "-"}</div>
+
+<div class="label">Area</div>
+<div class="value">${l.area || "-"}</div>
+</div>
+
+<div class="section">
+<span class="tag">${l.type}</span>
+<span class="tag">${l.category}</span>
+<span class="tag">${l.propertyType}</span>
+</div>
+
+<div class="section">
+<div class="label">Budget</div>
+<div class="value">₹${l.budgetMin || "-"} - ${l.budgetMax || "-"}</div>
+
+<div class="label">Remark</div>
+<div class="value">${l.remark || "-"}</div>
+</div>
+
+<div class="status-tag">Status: ${l.status}</div>
+
+<div class="value"><b>Assigned:</b> ${l.assignedTo || "None"}</div>
+
 ${btn}
+
 </div>
 `;
 });
@@ -169,47 +332,7 @@ ${btn}
 document.getElementById("totalLeads").innerText = count + " Leads";
 }
 
-/* ADD LEAD */
-function addLead(){
-let name=val("name"), phone=val("phone");
-
-if(!name||!phone){alert("Fill required");return;}
-
-let key=db.ref("leads").push().key;
-
-db.ref("leads/"+key).set({
-name,phone,
-location:val("location"),
-area:val("area"),
-budgetMin:val("budgetMin"),
-budgetMax:val("budgetMax"),
-type:val("type"),
-category:val("category"),
-propertyType:val("propertyType"),
-urgency:val("urgency"),
-remark:val("remark"),
-status:"new",
-assignedTo:""
-}).then(()=>{
-clearForm(); closePopup();
-});
-}
-
-/* ASSIGN */
-function assign(id){
-db.ref("leads/"+id).update({assignedTo:currentUser});
-
-let ref=db.ref("users/"+currentUser+"/leads");
-ref.once("value").then(s=>{
-ref.set((s.val()||0)+1);
-});
-}
-
-/* HELPERS */
-function val(id){return document.getElementById(id).value;}
-function clearForm(){document.querySelectorAll(".popup input,.popup textarea").forEach(i=>i.value="");}
-function openPopup(){popup.style.display="flex";}
-function closePopup(){popup.style.display="none";}
+function val(id){return document.getElementById(id).value}
 function go(p){window.location.href=p;}
 
 </script>
