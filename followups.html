@@ -12,17 +12,28 @@
 body{background:#F1F5F9;display:none}
 
 /* Sidebar */
-.sidebar{
-width:180px;height:100vh;
-background:#1E293B;color:white;
-padding:20px;position:fixed;
-}
+.sidebar{width:180px;height:100vh;background:#1E293B;color:white;padding:20px;position:fixed}
 .logo{font-size:22px;font-weight:700;margin-bottom:30px}
 .menu-item{padding:10px;margin:10px 0;border-radius:8px;cursor:pointer}
 .menu-item:hover,.active{background:#2563EB}
 
 /* Main */
 .main{margin-left:200px;padding:25px}
+
+/* Header */
+.header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:20px;
+}
+
+.btn{
+padding:10px 16px;
+background:linear-gradient(135deg,#2563EB,#1E40AF);
+color:white;border:none;border-radius:8px;
+cursor:pointer;
+}
 
 /* Top Card */
 .top-card{
@@ -54,11 +65,6 @@ box-shadow:0 10px 25px rgba(0,0,0,0.05);
 .label{font-size:12px;color:#64748B;}
 .value{font-size:14px;margin-bottom:6px;}
 
-.tag{
-display:inline-block;padding:4px 8px;border-radius:6px;
-font-size:11px;margin-right:5px;background:#DBEAFE;
-}
-
 .assign{
 margin-top:10px;
 padding:8px;
@@ -67,6 +73,32 @@ background:#22C55E;
 color:white;border:none;border-radius:8px;
 cursor:pointer;
 }
+
+/* Popup */
+.popup{
+position:fixed;top:0;left:0;width:100%;height:100%;
+background:rgba(0,0,0,0.5);
+display:none;justify-content:center;align-items:center;
+}
+
+.popup-box{
+background:white;padding:25px;border-radius:14px;
+width:380px;max-height:90vh;overflow-y:auto;
+}
+
+.popup input,.popup select,.popup textarea{
+width:100%;padding:10px;margin-bottom:10px;
+border-radius:8px;border:1px solid #ccc;
+}
+
+.actions{display:flex;gap:10px;}
+.save-btn{
+flex:1;padding:10px;background:#2563EB;color:white;border:none;border-radius:8px;
+}
+.cancel-btn{
+flex:1;padding:10px;background:#E2E8F0;border:none;border-radius:8px;
+}
+
 </style>
 </head>
 
@@ -83,42 +115,18 @@ cursor:pointer;
 
 <div class="main">
 
-<!-- 🔥 TOTAL LEADS -->
+<div class="header">
+<h1>All Leads</h1>
+<button class="btn" onclick="openPopup()">+ Add Lead</button>
+</div>
+
 <div class="top-card">
 <h2 id="totalLeads">0 Leads</h2>
 <p>Total available leads</p>
 </div>
 
-<!-- FILTERS -->
 <div class="filters">
 <input id="search" placeholder="Search..." oninput="render()">
-
-<select id="typeFilter" onchange="render()">
-<option value="">All Type</option>
-<option value="buy">Buy</option>
-<option value="rent">Rent</option>
-</select>
-
-<select id="categoryFilter" onchange="render()">
-<option value="">All Category</option>
-<option value="residential">Residential</option>
-<option value="commercial">Commercial</option>
-</select>
-
-<select id="propertyFilter" onchange="render()">
-<option value="">All Property</option>
-<option value="house">House</option>
-<option value="shop">Shop</option>
-<option value="plot">Plot</option>
-</select>
-
-<select id="statusFilter" onchange="render()">
-<option value="">All Status</option>
-<option value="new">New</option>
-<option value="contacted">Contacted</option>
-<option value="visit">Visit</option>
-<option value="closed">Closed</option>
-</select>
 
 <select id="assignFilter" onchange="render()">
 <option value="">All Leads</option>
@@ -129,6 +137,29 @@ cursor:pointer;
 
 <div class="grid" id="container"></div>
 
+</div>
+
+<!-- POPUP -->
+<div class="popup" id="popup">
+<div class="popup-box">
+
+<h3>Add Lead</h3>
+
+<input id="name" placeholder="Name">
+<input id="phone" placeholder="Phone">
+<input id="location" placeholder="Location">
+<input id="area" placeholder="Area">
+<input id="budgetMin" placeholder="Budget Min">
+<input id="budgetMax" placeholder="Budget Max">
+
+<textarea id="remark" placeholder="Remark"></textarea>
+
+<div class="actions">
+<button class="cancel-btn" onclick="closePopup()">Cancel</button>
+<button class="save-btn" onclick="addLead()">Save</button>
+</div>
+
+</div>
 </div>
 
 <script>
@@ -148,7 +179,6 @@ const auth=firebase.auth();
 let currentUser="";
 let allLeads={};
 
-/* AUTH */
 auth.onAuthStateChanged(user=>{
 if(!user){
 window.location.href="index.html";
@@ -159,7 +189,6 @@ load();
 }
 });
 
-/* LOAD */
 function load(){
 db.ref("leads").on("value",snap=>{
 allLeads=snap.val()||{};
@@ -167,14 +196,9 @@ render();
 });
 }
 
-/* RENDER */
 function render(){
 
 let search=val("search").toLowerCase();
-let typeF=val("typeFilter");
-let catF=val("categoryFilter");
-let propF=val("propertyFilter");
-let statusF=val("statusFilter");
 let assignF=val("assignFilter");
 
 let container=document.getElementById("container");
@@ -187,13 +211,8 @@ Object.keys(allLeads).forEach(id=>{
 let l=allLeads[id];
 
 if(search && !l.name.toLowerCase().includes(search)) return;
-if(typeF && l.type!==typeF) return;
-if(catF && l.category!==catF) return;
-if(propF && l.propertyType!==propF) return;
-if(statusF && l.status!==statusF) return;
-
 if(assignF==="unassigned" && l.assignedTo) return;
-if(assignFilter==="assigned" && !l.assignedTo) return;
+if(assignF==="assigned" && !l.assignedTo) return;
 
 count++;
 
@@ -213,23 +232,8 @@ container.innerHTML+=`
 <div class="label">📍 Location</div>
 <div class="value">${l.location || "-"}</div>
 
-<div class="label">📐 Area</div>
-<div class="value">${l.area || "-"}</div>
-
 <div class="label">💰 Budget</div>
 <div class="value">₹${l.budgetMin || "-"} - ₹${l.budgetMax || "-"}</div>
-
-<div class="label">🏷 Property</div>
-<div class="value">
-<span class="tag">${l.type}</span>
-<span class="tag">${l.category}</span>
-<span class="tag">${l.propertyType}</span>
-</div>
-
-<div class="label">📊 Status</div>
-<div class="value">${l.status}</div>
-
-${l.remark ? `<div class="label">📝 Remark</div><div class="value">${l.remark}</div>` : ""}
 
 <p><b>Assigned:</b> ${l.assignedTo || "None"}</p>
 
@@ -243,25 +247,70 @@ document.getElementById("totalLeads").innerText = count + " Leads";
 
 }
 
-/* 🔥 ASSIGN + UPDATE USER LEADS COUNT */
+/* ADD LEAD WITH DATE */
+function addLead(){
+
+let name=val("name").trim();
+let phone=val("phone").trim();
+
+if(!name || !phone){
+alert("Enter name & phone");
+return;
+}
+
+let now=new Date();
+
+let key=db.ref("leads").push().key;
+
+db.ref("leads/"+key).set({
+leadId:"L-"+Date.now(),
+name,
+phone,
+location:val("location"),
+area:val("area"),
+budgetMin:val("budgetMin"),
+budgetMax:val("budgetMax"),
+remark:val("remark"),
+status:"new",
+assignedTo:"",
+
+/* ✅ NEW FIELD */
+createdDate:now.toISOString().split("T")[0],
+createdTime:now.toLocaleTimeString()
+
+}).then(()=>{
+clearForm();
+closePopup();
+});
+
+}
+
+/* ASSIGN */
 function assign(id){
 
 db.ref("leads/"+id).update({
 assignedTo:currentUser
 });
 
-/* update leads count */
 let ref=db.ref("users/"+currentUser+"/leads");
 
 ref.once("value").then(s=>{
-let val=s.val()||0;
-ref.set(val+1);
+let v=s.val()||0;
+ref.set(v+1);
 });
 
 }
 
+/* HELPERS */
 function val(id){return document.getElementById(id).value}
 function go(p){window.location.href=p;}
+
+function clearForm(){
+document.querySelectorAll(".popup input, textarea").forEach(i=>i.value="");
+}
+
+function openPopup(){popup.style.display="flex";}
+function closePopup(){popup.style.display="none";}
 
 </script>
 
