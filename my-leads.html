@@ -1,1 +1,229 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>My Leads</title>
 
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI'}
+body{background:#F1F5F9;display:none}
+
+/* Sidebar */
+.sidebar{
+width:180px;height:100vh;
+background:#1E293B;color:white;
+padding:20px;position:fixed;
+}
+.logo{font-size:22px;font-weight:700;margin-bottom:30px}
+.menu-item{
+padding:10px;margin:10px 0;border-radius:8px;cursor:pointer;
+}
+.menu-item:hover,.active{background:#2563EB}
+
+/* Main */
+.main{margin-left:200px;padding:25px}
+
+/* Header */
+.header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:20px;
+}
+
+/* Cards */
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+gap:20px;
+}
+
+.card{
+background:white;
+padding:18px;
+border-radius:14px;
+box-shadow:0 10px 25px rgba(0,0,0,0.05);
+}
+
+.tag{
+display:inline-block;
+padding:4px 8px;
+border-radius:6px;
+font-size:11px;
+margin-right:5px;
+background:#DBEAFE;
+}
+
+/* Status */
+.status{
+margin-top:10px;
+width:100%;
+padding:6px;
+border-radius:6px;
+}
+
+/* Buttons */
+.actions{
+display:flex;
+gap:10px;
+margin-top:10px;
+}
+
+.btn{
+flex:1;
+padding:8px;
+border:none;
+border-radius:8px;
+cursor:pointer;
+}
+
+.convert{background:#22C55E;color:white;}
+.leave{background:#EF4444;color:white;}
+
+</style>
+</head>
+
+<body>
+
+<div class="sidebar">
+<div class="logo">DealBridge Estates</div>
+
+<div class="menu-item" onclick="go('dashboard.html')">Dashboard</div>
+<div class="menu-item active">My Leads</div>
+<div class="menu-item" onclick="go('my-day.html')">My Day</div>
+<div class="menu-item" onclick="go('followups.html')">All Leads</div>
+<div class="menu-item" onclick="go('properties.html')">Properties</div>
+
+</div>
+
+<div class="main">
+
+<div class="header">
+<h1>My Leads</h1>
+</div>
+
+<div class="grid" id="container"></div>
+
+</div>
+
+<script>
+
+const firebaseConfig={
+apiKey:"AIzaSyBHswtiTozfR5xVZUOWtg_pTNtXjiCQJF0",
+authDomain:"deal-bridge-estates.firebaseapp.com",
+databaseURL:"https://deal-bridge-estates-default-rtdb.firebaseio.com/",
+projectId:"deal-bridge-estates"
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const db=firebase.database();
+const auth=firebase.auth();
+
+let currentUser="";
+
+/* AUTH */
+auth.onAuthStateChanged(user=>{
+if(!user){
+window.location.href="index.html";
+}else{
+document.body.style.display="block";
+currentUser=user.email.split("@")[0];
+loadLeads();
+}
+});
+
+/* LOAD ONLY MY LEADS */
+function loadLeads(){
+
+db.ref("leads").on("value",snap=>{
+let data=snap.val()||{};
+let container=document.getElementById("container");
+container.innerHTML="";
+
+Object.keys(data).forEach(id=>{
+
+let l=data[id];
+
+/* ONLY MY LEADS */
+if(l.assignedTo !== currentUser) return;
+
+container.innerHTML+=`
+<div class="card">
+
+<h3>${l.name}</h3>
+<p>${l.phone}</p>
+<p>${l.location || ""}</p>
+
+<div style="margin:8px 0">
+<span class="tag">${l.type}</span>
+<span class="tag">${l.category}</span>
+<span class="tag">${l.propertyType}</span>
+</div>
+
+<p>₹${l.budgetMin || "-"} - ${l.budgetMax || "-"}</p>
+<p>Area: ${l.area || "-"}</p>
+
+<select class="status" onchange="updateStatus('${id}',this.value)">
+<option ${l.status==="new"?"selected":""}>new</option>
+<option ${l.status==="contacted"?"selected":""}>contacted</option>
+<option ${l.status==="visit"?"selected":""}>visit</option>
+<option ${l.status==="closed"?"selected":""}>closed</option>
+</select>
+
+<div class="actions">
+<button class="btn convert" onclick="convert('${id}')">Convert</button>
+<button class="btn leave" onclick="leave('${id}')">Leave</button>
+</div>
+
+</div>
+`;
+
+});
+
+});
+
+}
+
+/* UPDATE STATUS */
+function updateStatus(id,status){
+db.ref("leads/"+id).update({status});
+}
+
+/* CONVERT TO DEAL */
+function convert(id){
+
+db.ref("leads/"+id).once("value").then(snap=>{
+let data=snap.val();
+
+/* MOVE TO DEALS */
+db.ref("deals/"+id).set(data);
+
+/* REMOVE FROM LEADS */
+db.ref("leads/"+id).remove();
+
+});
+
+}
+
+/* LEAVE LEAD */
+function leave(id){
+
+db.ref("leads/"+id).update({
+assignedTo:""
+});
+
+}
+
+/* NAV */
+function go(p){
+window.location.href=p;
+}
+
+</script>
+
+</body>
+</html>
