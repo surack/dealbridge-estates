@@ -36,8 +36,7 @@ cursor:pointer;
 /* Counter */
 .top-card{
 background:linear-gradient(135deg,#3B82F6,#1E40AF);
-color:white;padding:22px;border-radius:16px;margin-bottom:20px;
-box-shadow:0 10px 25px rgba(0,0,0,0.1);
+color:white;padding:20px;border-radius:14px;margin-bottom:20px;
 }
 
 /* Filters */
@@ -55,52 +54,35 @@ grid-template-columns:repeat(auto-fill,minmax(340px,1fr));
 gap:20px;
 }
 
-/* NEW PROFESSIONAL CARD */
+/* ✅ UPDATED CARD UI ONLY */
 .card{
 background:white;
 padding:20px;
 border-radius:16px;
-box-shadow:0 12px 30px rgba(0,0,0,0.06);
+box-shadow:0 10px 25px rgba(0,0,0,0.06);
 transition:0.2s;
 }
+.card:hover{transform:translateY(-3px)}
 
-.card:hover{
-transform:translateY(-3px);
-}
-
-.header-row{
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:10px;
-}
-
-.name{
+.title{
 font-size:18px;
 font-weight:600;
+margin-bottom:6px;
 }
 
-.badge{
-font-size:11px;
-padding:4px 8px;
-border-radius:6px;
-}
-
-.low{background:#E0F2FE;color:#0369A1;}
-.high{background:#FEE2E2;color:#B91C1C;}
-
-.section{
-margin-top:10px;
+.row{
+font-size:14px;
+margin-bottom:6px;
+color:#334155;
 }
 
 .label{
-font-size:11px;
+font-size:12px;
 color:#64748B;
 }
 
-.value{
-font-size:14px;
-margin-bottom:6px;
+.tags{
+margin:8px 0;
 }
 
 .tag{
@@ -112,42 +94,72 @@ margin-right:5px;
 background:#DBEAFE;
 }
 
+.urgency{
+font-size:11px;
+padding:3px 8px;
+border-radius:6px;
+margin-left:6px;
+}
+.low{background:#E0F2FE;color:#0369A1;}
+.high{background:#FEE2E2;color:#B91C1C;}
+
 .status-tag{
 margin-top:6px;
 font-size:12px;
 color:#16A34A;
-font-weight:500;
 }
 
 .manage{
-margin-top:12px;
+margin-top:10px;
 width:100%;
-padding:10px;
+padding:8px;
 background:#22C55E;
-color:white;border:none;border-radius:10px;
+color:white;border:none;border-radius:8px;
 cursor:pointer;
 }
 
-/* Popup unchanged */
-.popup{position:fixed;top:0;left:0;width:100%;height:100%;
+/* Popup (UNCHANGED) */
+.popup{
+position:fixed;top:0;left:0;width:100%;height:100%;
 background:rgba(0,0,0,0.5);
-display:none;justify-content:center;align-items:center;}
+display:none;justify-content:center;align-items:center;
+}
 
 .popup-box{
-background:white;padding:25px;border-radius:14px;
-width:380px;max-height:90vh;overflow-y:auto;
+background:white;
+padding:25px;
+border-radius:14px;
+width:380px;
+max-height:90vh;
+overflow-y:auto;
 }
 
 .popup input,.popup select,.popup textarea{
-width:100%;padding:10px;margin-bottom:12px;
-border-radius:8px;border:1px solid #ccc;
+width:100%;
+padding:10px;
+margin-bottom:12px;
+border-radius:8px;
+border:1px solid #ccc;
 }
 
 .actions{display:flex;gap:10px;}
 
-.save-btn{flex:1;padding:10px;background:#2563EB;color:white;border:none;border-radius:8px;}
-.cancel-btn{flex:1;padding:10px;background:#E2E8F0;border:none;border-radius:8px;}
+.save-btn{
+flex:1;
+padding:10px;
+background:#2563EB;
+color:white;
+border:none;
+border-radius:8px;
+}
 
+.cancel-btn{
+flex:1;
+padding:10px;
+background:#E2E8F0;
+border:none;
+border-radius:8px;
+}
 </style>
 </head>
 
@@ -176,12 +188,6 @@ border-radius:8px;border:1px solid #ccc;
 
 <div class="filters">
 <input id="search" placeholder="Search..." oninput="render()">
-
-<select id="urgencyFilter" onchange="render()">
-<option value="">All Urgency</option>
-<option value="low">Low</option>
-<option value="high">High</option>
-</select>
 
 <select id="typeFilter" onchange="render()">
 <option value="">All Type</option>
@@ -253,7 +259,6 @@ render();
 function render(){
 
 let search=val("search").toLowerCase();
-let urgencyF=val("urgencyFilter");
 let typeF=val("typeFilter");
 let catF=val("categoryFilter");
 let propF=val("propertyFilter");
@@ -270,7 +275,6 @@ Object.keys(allLeads).forEach(id=>{
 let l=allLeads[id];
 
 if(search && !l.name.toLowerCase().includes(search)) return;
-if(urgencyF && l.urgency!==urgencyF) return;
 if(typeF && l.type!==typeF) return;
 if(catF && l.category!==catF) return;
 if(propF && l.propertyType!==propF) return;
@@ -289,39 +293,27 @@ btn=`<button class="manage" onclick="assign('${id}')">Assign to Me</button>`;
 container.innerHTML+=`
 <div class="card">
 
-<div class="header-row">
-<div class="name">${l.name}</div>
-<div class="badge ${l.urgency}">${l.urgency}</div>
-</div>
+<div class="title">${l.name}</div>
 
-<div class="section">
-<div class="label">Phone</div>
-<div class="value">${l.phone}</div>
+<div class="row">${l.phone}</div>
+<div class="row">${l.location || ""}</div>
 
-<div class="label">Location</div>
-<div class="value">${l.location || "-"}</div>
+<div class="row"><b>Area:</b> ${l.area || "-"}</div>
 
-<div class="label">Area</div>
-<div class="value">${l.area || "-"}</div>
-</div>
-
-<div class="section">
+<div class="tags">
 <span class="tag">${l.type}</span>
 <span class="tag">${l.category}</span>
 <span class="tag">${l.propertyType}</span>
+<span class="urgency ${l.urgency}">${l.urgency}</span>
 </div>
 
-<div class="section">
-<div class="label">Budget</div>
-<div class="value">₹${l.budgetMin || "-"} - ${l.budgetMax || "-"}</div>
+<div class="row"><b>Budget:</b> ₹${l.budgetMin || "-"} - ${l.budgetMax || "-"}</div>
 
-<div class="label">Remark</div>
-<div class="value">${l.remark || "-"}</div>
-</div>
+<div class="row"><b>Remark:</b> ${l.remark || "-"}</div>
 
 <div class="status-tag">Status: ${l.status}</div>
 
-<div class="value"><b>Assigned:</b> ${l.assignedTo || "None"}</div>
+<div class="row"><b>Assigned:</b> ${l.assignedTo || "None"}</div>
 
 ${btn}
 
@@ -332,8 +324,15 @@ ${btn}
 document.getElementById("totalLeads").innerText = count + " Leads";
 }
 
+function assign(id){
+db.ref("leads/"+id).update({assignedTo:currentUser});
+}
+
 function val(id){return document.getElementById(id).value}
 function go(p){window.location.href=p;}
+
+function openPopup(){document.getElementById("popup").style.display="flex";}
+function closePopup(){document.getElementById("popup").style.display="none";}
 
 </script>
 
