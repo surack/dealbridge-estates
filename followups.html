@@ -24,39 +24,58 @@ body{background:#F1F5F9}
 .header{display:flex;justify-content:space-between;margin-bottom:20px}
 .btn{padding:10px 15px;background:#2563EB;color:#fff;border:none;border-radius:6px;cursor:pointer}
 
-/* Cards UI */
+/* Cards */
 .leads-container{
 display:grid;
-grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
-gap:15px;
+grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+gap:20px;
 }
 
 .lead-card{
 background:white;
-padding:15px;
-border-radius:12px;
-box-shadow:0 8px 20px rgba(0,0,0,0.06);
+padding:18px;
+border-radius:14px;
+box-shadow:0 10px 25px rgba(0,0,0,0.06);
 transition:0.3s;
+position:relative;
 }
 
-.lead-card:hover{transform:translateY(-3px)}
+.lead-card:hover{transform:translateY(-4px)}
 
-.tag{
-font-size:11px;
-padding:4px 8px;
-border-radius:5px;
-background:#DBEAFE;
+.lead-title{
+font-size:18px;
+font-weight:600;
+margin-bottom:5px;
+}
+
+.lead-meta{
+font-size:13px;
+color:#64748B;
+margin-bottom:8px;
+}
+
+.badge{
 display:inline-block;
-margin-top:5px;
+padding:4px 8px;
+font-size:11px;
+border-radius:6px;
+margin-right:5px;
 }
 
+.buy{background:#DBEAFE}
+.rent{background:#FEE2E2}
+.high{background:#FECACA}
+.low{background:#DCFCE7}
+
+/* Assign button */
 .manage{
-margin-top:10px;
-padding:6px 10px;
-background:#22C55E;
+margin-top:12px;
+padding:8px;
+width:100%;
+background:#2563EB;
 color:white;
 border:none;
-border-radius:6px;
+border-radius:8px;
 cursor:pointer;
 }
 
@@ -69,21 +88,22 @@ display:none;justify-content:center;align-items:center;
 
 .popup-box{
 background:white;
-padding:20px;
-border-radius:12px;
-width:350px;
+padding:25px;
+border-radius:14px;
+width:360px;
 }
 
 .popup input,.popup select{
 width:100%;
 padding:10px;
 margin-bottom:10px;
-border-radius:6px;
+border-radius:8px;
 border:1px solid #ccc;
 }
 
 .actions{
-display:flex;justify-content:space-between;
+display:flex;
+justify-content:space-between;
 }
 </style>
 </head>
@@ -139,8 +159,8 @@ display:flex;justify-content:space-between;
     </select>
 
     <select id="urgency">
-      <option value="low">Low</option>
-      <option value="high">High</option>
+      <option value="low">Low Urgency</option>
+      <option value="high">High Urgency</option>
     </select>
 
     <div class="actions">
@@ -177,35 +197,44 @@ loadLeads();
 }
 });
 
-/* LOAD */
+/* LOAD LEADS */
 function loadLeads(){
+
 db.ref("leads").on("value",snap=>{
 let data=snap.val();
 let container=document.getElementById("leadsContainer");
 container.innerHTML="";
 
 for(let id in data){
+
 let l=data[id];
 
-let manageBtn="";
+let assignBtn="";
 if(!l.assignedTo){
-manageBtn=`<button class="manage" onclick="assignLead('${id}')">Assign to Me</button>`;
+assignBtn=`<button class="manage" onclick="assignLead('${id}')">Assign to Me</button>`;
 }
 
 container.innerHTML+=`
 <div class="lead-card">
-<h3>${l.name}</h3>
-<p>${l.phone}</p>
-<p>${l.location}</p>
-<p>₹${l.budgetMin} - ₹${l.budgetMax}</p>
 
-<div class="tag">${l.type} • ${l.category}</div>
-<div class="tag">${l.propertyType} • ${l.urgency}</div>
+<div class="lead-title">${l.name}</div>
+<div class="lead-meta">${l.phone} • ${l.location}</div>
 
-<p>Lead ID: ${l.leadId}</p>
-<p>Assigned: ${l.assignedTo || "None"}</p>
+<div>
+<span class="badge ${l.type}">${l.type}</span>
+<span class="badge">${l.propertyType}</span>
+<span class="badge ${l.urgency}">${l.urgency}</span>
+</div>
 
-${manageBtn}
+<p style="margin-top:10px">₹${l.budgetMin} - ₹${l.budgetMax}</p>
+<p>Area: ${l.area} sq ft</p>
+
+<p style="margin-top:8px;font-size:12px;color:#64748B">
+ID: ${l.leadId} | Assigned: ${l.assignedTo || "None"}
+</p>
+
+${assignBtn}
+
 </div>
 `;
 }
@@ -215,29 +244,26 @@ ${manageBtn}
 /* ADD LEAD */
 function addLead(){
 
-let nameVal=name.value;
-let phoneVal=phone.value;
+let nameVal=document.getElementById("name").value.trim();
+let phoneVal=document.getElementById("phone").value.trim();
 
-if(!nameVal || !phoneVal){
-alert("Fill required fields");
+if(nameVal==="" || phoneVal===""){
+alert("Name and Phone required");
 return;
 }
 
-/* GET LAST ID */
 db.ref("meta/lastLeadId").once("value").then(snap=>{
 
-let last=snap.val() || 0;
+let last=snap.val()||0;
 let newId=last+1;
 
-/* FORMAT ID */
 let leadId="L"+String(newId).padStart(3,"0");
-
 let key=Date.now();
 
 db.ref("leads/"+key).set({
-leadId:leadId,
-name:name.value,
-phone:phone.value,
+leadId,
+name:nameVal,
+phone:phoneVal,
 location:location.value,
 area:area.value,
 budgetMin:budgetMin.value,
@@ -249,7 +275,6 @@ urgency:urgency.value,
 assignedTo:""
 });
 
-/* UPDATE COUNTER */
 db.ref("meta/lastLeadId").set(newId);
 
 /* CLEAR FORM */
@@ -268,19 +293,13 @@ db.ref("leads/"+id).update({
 assignedTo:currentUser
 });
 
-/* STORE REFERENCE */
 db.ref("users/"+currentUser+"/myLeads/"+id).set(true);
 
 }
 
 /* POPUP */
-function openPopup(){
-popup.style.display="flex";
-}
-
-function closePopup(){
-popup.style.display="none";
-}
+function openPopup(){ popup.style.display="flex"; }
+function closePopup(){ popup.style.display="none"; }
 
 function go(p){window.location.href=p;}
 
