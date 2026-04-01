@@ -20,14 +20,16 @@ body{background:#F1F5F9;display:none}
 /* Main */
 .main{margin-left:200px;padding:25px}
 
-/* Top card */
+/* Top Card */
 .top-card{
 background:linear-gradient(135deg,#3B82F6,#1E40AF);
 color:white;padding:20px;border-radius:14px;margin-bottom:20px;
 }
 
 /* Filters */
-.filters{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap}
+.filters{
+display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;
+}
 .filters input,.filters select{
 padding:10px;border-radius:8px;border:1px solid #ccc;
 }
@@ -45,6 +47,7 @@ background:white;padding:18px;border-radius:14px;
 box-shadow:0 10px 25px rgba(0,0,0,0.05);
 }
 
+/* Labels */
 .label{font-size:12px;color:#64748B;}
 .value{font-size:14px;margin-bottom:6px;}
 
@@ -68,11 +71,13 @@ font-size:11px;margin-right:5px;background:#DBEAFE;
 
 <div class="sidebar">
 <div class="logo">DealBridge Estates</div>
+
 <div class="menu-item" onclick="go('dashboard.html')">Dashboard</div>
 <div class="menu-item active">My Leads</div>
 <div class="menu-item" onclick="go('my-day.html')">My Day</div>
 <div class="menu-item" onclick="go('followups.html')">All Leads</div>
 <div class="menu-item" onclick="go('properties.html')">Properties</div>
+
 </div>
 
 <div class="main">
@@ -82,6 +87,7 @@ font-size:11px;margin-right:5px;background:#DBEAFE;
 <p>Your assigned leads</p>
 </div>
 
+<!-- FILTERS -->
 <div class="filters">
 <input id="search" placeholder="Search..." oninput="render()">
 
@@ -134,6 +140,7 @@ const auth=firebase.auth();
 let currentUser="";
 let allLeads={};
 
+/* AUTH */
 auth.onAuthStateChanged(user=>{
 if(!user){
 window.location.href="index.html";
@@ -212,12 +219,12 @@ container.innerHTML+=`
 <option ${l.status==="closed"?"selected":""}>closed</option>
 </select>
 
-<!-- 🔥 CALL -->
+<!-- CALL -->
 <div class="label">📞 Call Schedule</div>
 <input class="input" type="date" value="${l.callDate || ""}" onchange="updateField('${id}','callDate',this.value)">
 <input class="input" type="time" value="${l.callTime || ""}" onchange="updateField('${id}','callTime',this.value)">
 
-<!-- 🔥 VISIT -->
+<!-- VISIT -->
 <div class="label">🏠 Visit Schedule</div>
 <input class="input" type="date" value="${l.visitDate || ""}" onchange="updateField('${id}','visitDate',this.value)">
 <input class="input" type="time" value="${l.visitTime || ""}" onchange="updateField('${id}','visitTime',this.value)">
@@ -245,7 +252,7 @@ function updateStatus(id,status){
 db.ref("leads/"+id).update({status});
 }
 
-/* ✅ FIXED CONVERT */
+/* ✅ FINAL CORRECT CONVERT */
 function convert(id){
 
 let now=new Date();
@@ -253,15 +260,16 @@ let now=new Date();
 db.ref("leads/"+id).once("value").then(snap=>{
 let data=snap.val();
 
+/* Add conversion info */
 data.convertedDate=now.toISOString().split("T")[0];
 data.convertedTime=now.toLocaleTimeString();
 
-/* MOVE */
+/* Move */
 db.ref("deals/"+id).set(data);
 db.ref("leads/"+id).remove();
 
-/* ✅ SAFE USER DEAL COUNT UPDATE */
-let userRef = db.ref("users/"+currentUser+"/stats/deals");
+/* ✅ Update EXISTING user deals field */
+let userRef = db.ref("users/"+currentUser+"/deals");
 
 userRef.once("value").then(s=>{
 let current = s.val() || 0;
@@ -277,6 +285,7 @@ function leave(id){
 db.ref("leads/"+id).update({assignedTo:""});
 }
 
+/* HELPERS */
 function val(id){return document.getElementById(id).value}
 function go(p){window.location.href=p;}
 
