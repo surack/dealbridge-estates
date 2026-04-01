@@ -12,7 +12,7 @@
 * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI'; }
 body { background:#F1F5F9; }
 
-/* Sidebar (UNCHANGED) */
+/* Sidebar */
 .sidebar {
   width:180px; height:100vh;
   background:#1E293B; color:white;
@@ -26,7 +26,6 @@ body { background:#F1F5F9; }
 .main {
   margin-left:200px;
   padding:20px;
-  width:calc(100% - 200px);
 }
 
 /* Header */
@@ -46,23 +45,19 @@ body { background:#F1F5F9; }
   cursor:pointer;
 }
 
-/* Leads Grid */
+/* Lead cards */
 .leads-container {
   display:grid;
   grid-template-columns: repeat(auto-fill, minmax(280px,1fr));
   gap:15px;
 }
 
-/* Lead Card */
 .lead-card {
   background:white;
   padding:15px;
   border-radius:10px;
   box-shadow:0 5px 10px rgba(0,0,0,0.05);
 }
-
-.lead-card h3 { margin-bottom:5px; }
-.lead-card p { font-size:13px; margin-bottom:4px; }
 
 .manage {
   margin-top:10px;
@@ -74,12 +69,12 @@ body { background:#F1F5F9; }
   cursor:pointer;
 }
 
-/* Popup */
+/* Popup Professional */
 .popup {
   position:fixed;
   top:0; left:0;
   width:100%; height:100%;
-  background:rgba(0,0,0,0.4);
+  background:rgba(0,0,0,0.5);
   display:none;
   justify-content:center;
   align-items:center;
@@ -87,22 +82,28 @@ body { background:#F1F5F9; }
 
 .popup-box {
   background:white;
-  padding:20px;
-  border-radius:10px;
-  width:320px;
+  padding:25px;
+  border-radius:12px;
+  width:350px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.2);
+}
+
+.popup-box h3 {
+  margin-bottom:15px;
 }
 
 .popup input, .popup select {
   width:100%;
-  padding:8px;
+  padding:10px;
   margin-bottom:10px;
+  border-radius:6px;
+  border:1px solid #ccc;
 }
 </style>
 </head>
 
 <body>
 
-<!-- SIDEBAR (FIXED) -->
 <div class="sidebar">
   <div class="logo">DealBridge Estates</div>
 
@@ -113,7 +114,6 @@ body { background:#F1F5F9; }
   <div class="menu-item" onclick="go('properties.html')">Properties</div>
 </div>
 
-<!-- MAIN -->
 <div class="main">
 
   <div class="header">
@@ -125,14 +125,20 @@ body { background:#F1F5F9; }
 
 </div>
 
-<!-- POPUP FORM -->
+<!-- POPUP -->
 <div class="popup" id="popup">
   <div class="popup-box">
 
     <h3>Add Lead</h3>
 
-    <input id="name" placeholder="Name">
+    <input id="name" placeholder="Client Name">
     <input id="phone" placeholder="Phone">
+
+    <input id="location" placeholder="Preferred Location">
+    <input id="area" placeholder="Area Required (sq ft)">
+
+    <input id="budgetMin" placeholder="Budget Min">
+    <input id="budgetMax" placeholder="Budget Max">
 
     <select id="type">
       <option value="buy">Buy</option>
@@ -150,16 +156,18 @@ body { background:#F1F5F9; }
       <option value="plot">Plot</option>
     </select>
 
-    <input id="budget" placeholder="Budget">
+    <select id="urgency">
+      <option value="low">Low Urgency</option>
+      <option value="high">High Urgency</option>
+    </select>
 
-    <button onclick="addLead()">Save</button>
+    <button onclick="addLead()">Save Lead</button>
 
   </div>
 </div>
 
 <script>
 
-/* 🔥 FIREBASE CONFIG */
 const firebaseConfig = {
   apiKey: "AIzaSyBHswtiTozfR5xVZUOWtg_pTNtXjiCQJF0",
   authDomain: "deal-bridge-estates.firebaseapp.com",
@@ -172,29 +180,26 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.database();
 
-/* 🔐 AUTH CHECK */
+let currentUser = "";
+
+/* AUTH */
 auth.onAuthStateChanged(user=>{
   if(!user){
-    window.location.href = "index.html";
+    window.location.href="index.html";
   } else {
+    currentUser = user.email.split("@")[0];
     loadLeads();
   }
 });
 
-/* 📊 LOAD LEADS */
+/* LOAD LEADS */
 function loadLeads(){
 
   db.ref("leads").on("value", snap=>{
 
     let data = snap.val();
     let container = document.getElementById("leadsContainer");
-
     container.innerHTML = "";
-
-    if(!data){
-      container.innerHTML = "No leads found";
-      return;
-    }
 
     for(let id in data){
 
@@ -208,11 +213,13 @@ function loadLeads(){
 
       container.innerHTML += `
         <div class="lead-card">
-          <h3>${l.name || ""}</h3>
-          <p>📞 ${l.phone || ""}</p>
+          <h3>${l.name}</h3>
+          <p>${l.phone}</p>
           <p>${l.type} | ${l.category} | ${l.propertyType}</p>
-          <p>💰 ₹${l.budget || ""}</p>
-          <p>Status: ${l.status || "new"}</p>
+          <p>${l.location}</p>
+          <p>${l.area} sq ft</p>
+          <p>₹${l.budgetMin} - ₹${l.budgetMax}</p>
+          <p>Urgency: ${l.urgency}</p>
           <p>Assigned: ${l.assignedTo || "None"}</p>
           ${manageBtn}
         </div>
@@ -223,48 +230,43 @@ function loadLeads(){
 
 }
 
-/* ➕ ADD LEAD */
+/* ADD LEAD */
 function addLead(){
-
-  let nameVal = document.getElementById("name").value;
-  let phoneVal = document.getElementById("phone").value;
-  let typeVal = document.getElementById("type").value;
-  let categoryVal = document.getElementById("category").value;
-  let propertyTypeVal = document.getElementById("propertyType").value;
-  let budgetVal = document.getElementById("budget").value;
-
-  if(!nameVal || !phoneVal){
-    alert("Please fill required fields");
-    return;
-  }
 
   let id = Date.now();
 
   db.ref("leads/"+id).set({
-    name: nameVal,
-    phone: phoneVal,
-    type: typeVal,
-    category: categoryVal,
-    propertyType: propertyTypeVal,
-    budget: budgetVal,
-    status: "new",
+    name: name.value,
+    phone: phone.value,
+    location: location.value,
+    area: area.value,
+    budgetMin: budgetMin.value,
+    budgetMax: budgetMax.value,
+    type: type.value,
+    category: category.value,
+    propertyType: propertyType.value,
+    urgency: urgency.value,
     assignedTo: ""
   });
 
+  clearForm();   // ✅ FIX
   closePopup();
 }
 
-/* 👤 ASSIGN */
+/* CLEAR FORM */
+function clearForm(){
+  document.querySelectorAll(".popup input").forEach(i => i.value="");
+}
+
+/* ASSIGN LEAD */
 function assignLead(id){
 
-  let user = prompt("Enter username (amit, raj etc):");
-
-  if(!user) return;
-
   db.ref("leads/"+id).update({
-    assignedTo: user
+    assignedTo: currentUser
   });
 
+  // store only reference
+  db.ref("users/"+currentUser+"/myLeads/"+id).set(true);
 }
 
 /* POPUP */
@@ -276,7 +278,6 @@ function closePopup(){
   document.getElementById("popup").style.display="none";
 }
 
-/* NAV */
 function go(p){ window.location.href=p; }
 
 </script>
