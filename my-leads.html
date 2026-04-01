@@ -20,19 +20,14 @@ body{background:#F1F5F9;display:none}
 /* Main */
 .main{margin-left:200px;padding:25px}
 
-/* TOP CARD */
+/* Top card */
 .top-card{
 background:linear-gradient(135deg,#3B82F6,#1E40AF);
-color:white;
-padding:20px;
-border-radius:14px;
-margin-bottom:20px;
+color:white;padding:20px;border-radius:14px;margin-bottom:20px;
 }
 
 /* Filters */
-.filters{
-display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;
-}
+.filters{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap}
 .filters input,.filters select{
 padding:10px;border-radius:8px;border:1px solid #ccc;
 }
@@ -46,9 +41,7 @@ gap:20px;
 
 /* Card */
 .card{
-background:white;
-padding:18px;
-border-radius:14px;
+background:white;padding:18px;border-radius:14px;
 box-shadow:0 10px 25px rgba(0,0,0,0.05);
 }
 
@@ -56,21 +49,17 @@ box-shadow:0 10px 25px rgba(0,0,0,0.05);
 .value{font-size:14px;margin-bottom:6px;}
 
 .tag{
-display:inline-block;
-padding:4px 8px;
-border-radius:6px;
-font-size:11px;
-margin-right:5px;
-background:#DBEAFE;
+display:inline-block;padding:4px 8px;border-radius:6px;
+font-size:11px;margin-right:5px;background:#DBEAFE;
 }
+
+.input{width:100%;padding:6px;margin-bottom:6px}
 
 /* Buttons */
 .actions{display:flex;gap:10px;margin-top:10px;}
 .btn{flex:1;padding:8px;border:none;border-radius:8px;cursor:pointer;}
 .convert{background:#22C55E;color:white;}
 .leave{background:#EF4444;color:white;}
-
-.input{width:100%;padding:6px;margin-bottom:6px;}
 
 </style>
 </head>
@@ -88,13 +77,11 @@ background:#DBEAFE;
 
 <div class="main">
 
-<!-- 🔥 TOTAL LEADS -->
 <div class="top-card">
 <h2 id="totalLeads">0 Leads</h2>
 <p>Your assigned leads</p>
 </div>
 
-<!-- FILTERS -->
 <div class="filters">
 <input id="search" placeholder="Search..." oninput="render()">
 
@@ -225,6 +212,16 @@ container.innerHTML+=`
 <option ${l.status==="closed"?"selected":""}>closed</option>
 </select>
 
+<!-- 🔥 CALL -->
+<div class="label">📞 Call Schedule</div>
+<input class="input" type="date" value="${l.callDate || ""}" onchange="updateField('${id}','callDate',this.value)">
+<input class="input" type="time" value="${l.callTime || ""}" onchange="updateField('${id}','callTime',this.value)">
+
+<!-- 🔥 VISIT -->
+<div class="label">🏠 Visit Schedule</div>
+<input class="input" type="date" value="${l.visitDate || ""}" onchange="updateField('${id}','visitDate',this.value)">
+<input class="input" type="time" value="${l.visitTime || ""}" onchange="updateField('${id}','visitTime',this.value)">
+
 <div class="actions">
 <button class="btn convert" onclick="convert('${id}')">Convert</button>
 <button class="btn leave" onclick="leave('${id}')">Leave</button>
@@ -238,12 +235,17 @@ document.getElementById("totalLeads").innerText = count + " Leads";
 
 }
 
-/* UPDATE STATUS */
+/* UPDATE FIELD */
+function updateField(id,field,value){
+db.ref("leads/"+id+"/"+field).set(value);
+}
+
+/* STATUS */
 function updateStatus(id,status){
 db.ref("leads/"+id).update({status});
 }
 
-/* CONVERT + UPDATE DEAL COUNT */
+/* ✅ FIXED CONVERT */
 function convert(id){
 
 let now=new Date();
@@ -254,15 +256,16 @@ let data=snap.val();
 data.convertedDate=now.toISOString().split("T")[0];
 data.convertedTime=now.toLocaleTimeString();
 
-/* ADD TO DEALS */
+/* MOVE */
 db.ref("deals/"+id).set(data);
-
-/* REMOVE FROM LEADS */
 db.ref("leads/"+id).remove();
 
-/* 🔥 INCREASE DEAL COUNT */
-db.ref("users/"+currentUser+"/stats/deals").transaction(count=>{
-return (count || 0) + 1;
+/* ✅ SAFE USER DEAL COUNT UPDATE */
+let userRef = db.ref("users/"+currentUser+"/stats/deals");
+
+userRef.once("value").then(s=>{
+let current = s.val() || 0;
+userRef.set(current + 1);
 });
 
 });
