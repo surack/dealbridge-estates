@@ -12,26 +12,48 @@
 body{background:#F1F5F9}
 
 /* Sidebar */
-.sidebar{width:180px;height:100vh;background:#1E293B;color:white;padding:20px;position:fixed}
+.sidebar{
+width:180px;height:100vh;
+background:#1E293B;color:white;
+padding:20px;position:fixed;
+}
 .logo{font-size:22px;font-weight:700;margin-bottom:30px}
 .menu-item{padding:10px;margin:10px 0;border-radius:8px;cursor:pointer}
 .menu-item:hover,.active{background:#2563EB}
 
 /* Main */
-.main{margin-left:200px;padding:25px}
+.main{
+margin-left:200px;
+padding:25px;
+}
 
 /* Header */
-.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:20px;
+}
+
 .btn{
 padding:10px 16px;
 background:linear-gradient(135deg,#2563EB,#1E40AF);
-color:white;border:none;border-radius:8px;cursor:pointer;
+color:white;border:none;border-radius:8px;
+cursor:pointer;
 }
 
 /* Filters */
-.filters{display:flex;gap:10px;margin-bottom:20px}
+.filters{
+display:flex;
+gap:10px;
+margin-bottom:20px;
+flex-wrap:wrap;
+}
+
 .filters input,.filters select{
-padding:10px;border-radius:8px;border:1px solid #ccc;
+padding:10px;
+border-radius:8px;
+border:1px solid #ccc;
 }
 
 /* Cards */
@@ -74,9 +96,12 @@ cursor:pointer;
 
 /* Popup */
 .popup{
-position:fixed;top:0;left:0;width:100%;height:100%;
+position:fixed;
+top:0;left:0;width:100%;height:100%;
 background:rgba(0,0,0,0.5);
-display:none;justify-content:center;align-items:center;
+display:none;
+justify-content:center;
+align-items:center;
 }
 
 .popup-box{
@@ -94,7 +119,10 @@ border-radius:8px;
 border:1px solid #ccc;
 }
 
-.actions{display:flex;justify-content:space-between}
+.actions{
+display:flex;
+justify-content:space-between;
+}
 </style>
 </head>
 
@@ -102,10 +130,11 @@ border:1px solid #ccc;
 
 <div class="sidebar">
 <div class="logo">DealBridge Estates</div>
-<div class="menu-item">Dashboard</div>
-<div class="menu-item">My Leads</div>
-<div class="menu-item">My Day</div>
+<div class="menu-item" onclick="go('dashboard.html')">Dashboard</div>
+<div class="menu-item" onclick="go('my-leads.html')">My Leads</div>
+<div class="menu-item" onclick="go('my-day.html')">My Day</div>
 <div class="menu-item active">All Leads</div>
+<div class="menu-item" onclick="go('properties.html')">Properties</div>
 </div>
 
 <div class="main">
@@ -115,12 +144,27 @@ border:1px solid #ccc;
 <button class="btn" onclick="openPopup()">+ Add Lead</button>
 </div>
 
+<!-- FILTERS -->
 <div class="filters">
 <input id="search" placeholder="Search..." oninput="render()">
+
 <select id="typeFilter" onchange="render()">
-<option value="">All</option>
+<option value="">All Type</option>
 <option value="buy">Buy</option>
 <option value="rent">Rent</option>
+</select>
+
+<select id="categoryFilter" onchange="render()">
+<option value="">All Category</option>
+<option value="residential">Residential</option>
+<option value="commercial">Commercial</option>
+</select>
+
+<select id="propertyFilter" onchange="render()">
+<option value="">All Property</option>
+<option value="house">House</option>
+<option value="shop">Shop</option>
+<option value="plot">Plot</option>
 </select>
 </div>
 
@@ -145,6 +189,11 @@ border:1px solid #ccc;
 <select id="type">
 <option value="buy">Buy</option>
 <option value="rent">Rent</option>
+</select>
+
+<select id="category">
+<option value="residential">Residential</option>
+<option value="commercial">Commercial</option>
 </select>
 
 <select id="propertyType">
@@ -205,7 +254,9 @@ render();
 function render(){
 
 let search=document.getElementById("search").value.toLowerCase();
-let typeFilter=document.getElementById("typeFilter").value;
+let typeF=document.getElementById("typeFilter").value;
+let catF=document.getElementById("categoryFilter").value;
+let propF=document.getElementById("propertyFilter").value;
 
 let container=document.getElementById("leadsContainer");
 container.innerHTML="";
@@ -215,11 +266,12 @@ Object.keys(allLeads).forEach(id=>{
 let l=allLeads[id];
 
 if(search && !l.name.toLowerCase().includes(search)) return;
-if(typeFilter && l.type!==typeFilter) return;
+if(typeF && l.type!==typeF) return;
+if(catF && l.category!==catF) return;
+if(propF && l.propertyType!==propF) return;
 
+/* STATUS CONTROL */
 let statusUI="";
-
-/* 🔐 ONLY ASSIGNED USER CAN EDIT */
 if(l.assignedTo===currentUser){
 statusUI=`
 <select onchange="updateStatus('${id}',this.value)">
@@ -239,14 +291,13 @@ assignBtn=`<button class="manage" onclick="assign('${id}')">Assign to Me</button
 
 container.innerHTML+=`
 <div class="card">
-
 <div class="title">${l.name}</div>
 <div class="meta">${l.phone} • ${l.location}</div>
 
 <div>
 <span class="tag">${l.type}</span>
+<span class="tag">${l.category}</span>
 <span class="tag">${l.propertyType}</span>
-<span class="tag">${l.urgency}</span>
 </div>
 
 <p style="margin-top:10px">₹${l.budgetMin}-${l.budgetMax}</p>
@@ -257,14 +308,13 @@ ${statusUI}
 <p>Assigned: ${l.assignedTo || "None"}</p>
 
 ${assignBtn}
-
 </div>
 `;
 });
 }
 
-/* ADD LEAD */
-async function addLead(){
+/* ADD LEAD (FINAL FIXED) */
+function addLead(){
 
 let name=document.getElementById("name").value.trim();
 let phone=document.getElementById("phone").value.trim();
@@ -274,17 +324,10 @@ alert("Enter name & phone");
 return;
 }
 
-try{
+let key=db.ref("leads").push().key;
+let leadId="L"+Math.floor(1000+Math.random()*9000);
 
-let snap=await db.ref("meta/lastLeadId").get();
-let last=snap.exists()?snap.val():0;
-
-let newId=last+1;
-let leadId="L"+String(newId).padStart(3,"0");
-
-let key=Date.now();
-
-await db.ref("leads/"+key).set({
+db.ref("leads/"+key).set({
 leadId,
 name,
 phone,
@@ -293,23 +336,18 @@ area:area.value,
 budgetMin:budgetMin.value,
 budgetMax:budgetMax.value,
 type:type.value,
+category:category.value,
 propertyType:propertyType.value,
 urgency:urgency.value,
 status:"new",
 assignedTo:""
-});
-
-await db.ref("meta/lastLeadId").set(newId);
-
-/* CLEAR */
+}).then(()=>{
 document.querySelectorAll(".popup input").forEach(i=>i.value="");
-
 closePopup();
-
-}catch(e){
-console.error(e);
-alert("Error saving lead");
-}
+}).catch(err=>{
+console.error(err);
+alert(err.message);
+});
 
 }
 
@@ -327,6 +365,8 @@ db.ref("leads/"+id).update({status});
 /* POPUP */
 function openPopup(){popup.style.display="flex";}
 function closePopup(){popup.style.display="none";}
+
+function go(p){window.location.href=p;}
 
 </script>
 
