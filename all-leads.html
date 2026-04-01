@@ -36,6 +36,12 @@ color:white;border:none;border-radius:8px;
 cursor:pointer;
 }
 
+/* ✅ NEW COUNTER */
+.top-card{
+background:linear-gradient(135deg,#3B82F6,#1E40AF);
+color:white;padding:20px;border-radius:14px;margin-bottom:20px;
+}
+
 /* Filters */
 .filters{
 display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;
@@ -135,7 +141,6 @@ border-radius:8px;
 
 <body>
 
-<!-- ✅ FIXED SIDEBAR -->
 <div class="sidebar">
 <div class="logo">DealBridge Estates</div>
 
@@ -144,7 +149,6 @@ border-radius:8px;
 <div class="menu-item" onclick="go('my-day.html')">My Day</div>
 <div class="menu-item active">All Leads</div>
 <div class="menu-item" onclick="go('properties.html')">Properties</div>
-
 </div>
 
 <div class="main">
@@ -152,6 +156,12 @@ border-radius:8px;
 <div class="header">
 <h1>All Leads</h1>
 <button class="btn" onclick="openPopup()">+ Add Lead</button>
+</div>
+
+<!-- ✅ NEW COUNTER -->
+<div class="top-card">
+<h2 id="totalLeads">0 Leads</h2>
+<p>Total available leads</p>
 </div>
 
 <div class="filters">
@@ -285,6 +295,8 @@ let assignF=val("assignFilter");
 let container=document.getElementById("leadsContainer");
 container.innerHTML="";
 
+let count=0;
+
 Object.keys(allLeads).forEach(id=>{
 
 let l=allLeads[id];
@@ -297,6 +309,8 @@ if(statusF && l.status!==statusF) return;
 
 if(assignF==="unassigned" && l.assignedTo) return;
 if(assignF==="assigned" && !l.assignedTo) return;
+
+count++;
 
 let btn="";
 if(!l.assignedTo){
@@ -325,8 +339,11 @@ ${btn}
 </div>
 `;
 });
+
+document.getElementById("totalLeads").innerText = count + " Leads";
 }
 
+/* ✅ UPDATED ADD LEAD */
 function addLead(){
 
 let name=val("name").trim();
@@ -336,6 +353,8 @@ if(!name || !phone){
 alert("Enter name & phone");
 return;
 }
+
+let now=new Date();
 
 let key=db.ref("leads").push().key;
 
@@ -353,7 +372,12 @@ propertyType:val("propertyType"),
 urgency:val("urgency"),
 remark:val("remark"),
 status:"new",
-assignedTo:""
+assignedTo:"",
+
+/* ✅ NEW FIELDS */
+addedOn: now.toISOString().split("T")[0],
+addedBy: currentUser
+
 }).then(()=>{
 clearForm();
 closePopup();
@@ -371,7 +395,6 @@ function assign(id){
 db.ref("leads/"+id).update({assignedTo:currentUser});
 }
 
-/* 🔥 FIXED NAVIGATION */
 function go(page){
 window.location.href=page;
 }
