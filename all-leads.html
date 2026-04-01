@@ -36,8 +36,7 @@ cursor:pointer;
 /* Counter */
 .top-card{
 background:linear-gradient(135deg,#3B82F6,#1E40AF);
-color:white;padding:22px;border-radius:16px;margin-bottom:20px;
-box-shadow:0 10px 25px rgba(0,0,0,0.1);
+color:white;padding:20px;border-radius:14px;margin-bottom:20px;
 }
 
 /* Filters */
@@ -55,54 +54,32 @@ grid-template-columns:repeat(auto-fill,minmax(340px,1fr));
 gap:20px;
 }
 
-/* NEW PROFESSIONAL CARD */
+/* PROFESSIONAL CARD */
 .card{
 background:white;
 padding:20px;
 border-radius:16px;
 box-shadow:0 12px 30px rgba(0,0,0,0.06);
-transition:0.2s;
+transition:0.3s;
 }
 
 .card:hover{
-transform:translateY(-3px);
+transform:translateY(-4px);
 }
 
-.header-row{
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:10px;
-}
-
-.name{
-font-size:18px;
-font-weight:600;
-}
-
-.badge{
-font-size:11px;
-padding:4px 8px;
-border-radius:6px;
-}
-
-.low{background:#E0F2FE;color:#0369A1;}
-.high{background:#FEE2E2;color:#B91C1C;}
-
-.section{
-margin-top:10px;
-}
-
-.label{
-font-size:11px;
+/* Sections */
+.section-title{
+font-size:12px;
 color:#64748B;
+margin-top:10px;
 }
 
 .value{
 font-size:14px;
-margin-bottom:6px;
+margin-bottom:5px;
 }
 
+/* Tags */
 .tag{
 display:inline-block;
 padding:4px 8px;
@@ -112,13 +89,26 @@ margin-right:5px;
 background:#DBEAFE;
 }
 
-.status-tag{
-margin-top:6px;
-font-size:12px;
-color:#16A34A;
-font-weight:500;
+.urgency-high{
+background:#FECACA;
+color:#991B1B;
 }
 
+.urgency-low{
+background:#DCFCE7;
+color:#166534;
+}
+
+.status-tag{
+display:inline-block;
+padding:5px 10px;
+border-radius:8px;
+font-size:11px;
+background:#E0F2FE;
+margin-top:8px;
+}
+
+/* Button */
 .manage{
 margin-top:12px;
 width:100%;
@@ -126,25 +116,14 @@ padding:10px;
 background:#22C55E;
 color:white;border:none;border-radius:10px;
 cursor:pointer;
+font-weight:500;
 }
 
 /* Popup unchanged */
-.popup{position:fixed;top:0;left:0;width:100%;height:100%;
-background:rgba(0,0,0,0.5);
-display:none;justify-content:center;align-items:center;}
-
-.popup-box{
-background:white;padding:25px;border-radius:14px;
-width:380px;max-height:90vh;overflow-y:auto;
-}
-
-.popup input,.popup select,.popup textarea{
-width:100%;padding:10px;margin-bottom:12px;
-border-radius:8px;border:1px solid #ccc;
-}
-
+.popup{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);display:none;justify-content:center;align-items:center;}
+.popup-box{background:white;padding:25px;border-radius:14px;width:380px;max-height:90vh;overflow-y:auto;}
+.popup input,.popup select,.popup textarea{width:100%;padding:10px;margin-bottom:12px;border-radius:8px;border:1px solid #ccc;}
 .actions{display:flex;gap:10px;}
-
 .save-btn{flex:1;padding:10px;background:#2563EB;color:white;border:none;border-radius:8px;}
 .cancel-btn{flex:1;padding:10px;background:#E2E8F0;border:none;border-radius:8px;}
 
@@ -177,12 +156,6 @@ border-radius:8px;border:1px solid #ccc;
 <div class="filters">
 <input id="search" placeholder="Search..." oninput="render()">
 
-<select id="urgencyFilter" onchange="render()">
-<option value="">All Urgency</option>
-<option value="low">Low</option>
-<option value="high">High</option>
-</select>
-
 <select id="typeFilter" onchange="render()">
 <option value="">All Type</option>
 <option value="buy">Buy</option>
@@ -210,6 +183,13 @@ border-radius:8px;border:1px solid #ccc;
 <option value="closed">Closed</option>
 </select>
 
+<!-- ✅ NEW URGENCY FILTER -->
+<select id="urgencyFilter" onchange="render()">
+<option value="">All Urgency</option>
+<option value="low">Low</option>
+<option value="high">High</option>
+</select>
+
 <select id="assignFilter" onchange="render()">
 <option value="">All Leads</option>
 <option value="unassigned">Unassigned</option>
@@ -222,6 +202,8 @@ border-radius:8px;border:1px solid #ccc;
 </div>
 
 <script>
+
+/* 🔴 DO NOT CHANGE LOGIC BELOW */
 
 const firebaseConfig={
 apiKey:"AIzaSyBHswtiTozfR5xVZUOWtg_pTNtXjiCQJF0",
@@ -253,12 +235,12 @@ render();
 function render(){
 
 let search=val("search").toLowerCase();
-let urgencyF=val("urgencyFilter");
 let typeF=val("typeFilter");
 let catF=val("categoryFilter");
 let propF=val("propertyFilter");
 let statusF=val("statusFilter");
 let assignF=val("assignFilter");
+let urgencyF=val("urgencyFilter");
 
 let container=document.getElementById("leadsContainer");
 container.innerHTML="";
@@ -270,11 +252,11 @@ Object.keys(allLeads).forEach(id=>{
 let l=allLeads[id];
 
 if(search && !l.name.toLowerCase().includes(search)) return;
-if(urgencyF && l.urgency!==urgencyF) return;
 if(typeF && l.type!==typeF) return;
 if(catF && l.category!==catF) return;
 if(propF && l.propertyType!==propF) return;
 if(statusF && l.status!==statusF) return;
+if(urgencyF && l.urgency!==urgencyF) return;
 
 if(assignF==="unassigned" && l.assignedTo) return;
 if(assignF==="assigned" && !l.assignedTo) return;
@@ -289,39 +271,32 @@ btn=`<button class="manage" onclick="assign('${id}')">Assign to Me</button>`;
 container.innerHTML+=`
 <div class="card">
 
-<div class="header-row">
-<div class="name">${l.name}</div>
-<div class="badge ${l.urgency}">${l.urgency}</div>
-</div>
+<h3>${l.name}</h3>
 
-<div class="section">
-<div class="label">Phone</div>
+<div class="section-title">Contact</div>
 <div class="value">${l.phone}</div>
-
-<div class="label">Location</div>
 <div class="value">${l.location || "-"}</div>
 
-<div class="label">Area</div>
-<div class="value">${l.area || "-"}</div>
-</div>
-
-<div class="section">
+<div class="section-title">Property</div>
 <span class="tag">${l.type}</span>
 <span class="tag">${l.category}</span>
 <span class="tag">${l.propertyType}</span>
-</div>
 
-<div class="section">
-<div class="label">Budget</div>
+<div class="section-title">Budget</div>
 <div class="value">₹${l.budgetMin || "-"} - ${l.budgetMax || "-"}</div>
 
-<div class="label">Remark</div>
+<div class="section-title">Area</div>
+<div class="value">${l.area || "-"}</div>
+
+<div class="section-title">Urgency</div>
+<div class="value ${l.urgency==='high'?'urgency-high':'urgency-low'}">${l.urgency}</div>
+
+<div class="section-title">Remark</div>
 <div class="value">${l.remark || "-"}</div>
-</div>
 
 <div class="status-tag">Status: ${l.status}</div>
 
-<div class="value"><b>Assigned:</b> ${l.assignedTo || "None"}</div>
+<p><b>Assigned:</b> ${l.assignedTo || "None"}</p>
 
 ${btn}
 
@@ -332,8 +307,16 @@ ${btn}
 document.getElementById("totalLeads").innerText = count + " Leads";
 }
 
+function assign(id){
+db.ref("leads/"+id).update({assignedTo:currentUser});
+let ref=db.ref("users/"+currentUser+"/leads");
+ref.once("value").then(s=>{ref.set((s.val()||0)+1);});
+}
+
 function val(id){return document.getElementById(id).value}
 function go(p){window.location.href=p;}
+function openPopup(){popup.style.display="flex";}
+function closePopup(){popup.style.display="none";}
 
 </script>
 
