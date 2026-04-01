@@ -21,62 +21,40 @@ body{background:#F1F5F9}
 .main{margin-left:200px;padding:20px}
 
 /* Header */
-.header{display:flex;justify-content:space-between;margin-bottom:20px}
-.btn{padding:10px 15px;background:#2563EB;color:#fff;border:none;border-radius:6px;cursor:pointer}
+.header{display:flex;justify-content:space-between;margin-bottom:15px}
+.btn{padding:10px;background:#2563EB;color:white;border:none;border-radius:6px}
+
+/* Filters */
+.filters{
+display:flex;
+gap:10px;
+margin-bottom:15px;
+}
+
+.filters select, .filters input{
+padding:8px;
+border-radius:6px;
+border:1px solid #ccc;
+}
 
 /* Cards */
 .leads-container{
 display:grid;
 grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
-gap:20px;
+gap:15px;
 }
 
 .lead-card{
 background:white;
-padding:18px;
-border-radius:14px;
-box-shadow:0 10px 25px rgba(0,0,0,0.06);
-transition:0.3s;
-position:relative;
+padding:15px;
+border-radius:12px;
+box-shadow:0 6px 15px rgba(0,0,0,0.05);
 }
 
-.lead-card:hover{transform:translateY(-4px)}
-
-.lead-title{
-font-size:18px;
-font-weight:600;
-margin-bottom:5px;
-}
-
-.lead-meta{
-font-size:13px;
-color:#64748B;
-margin-bottom:8px;
-}
-
-.badge{
-display:inline-block;
-padding:4px 8px;
-font-size:11px;
-border-radius:6px;
-margin-right:5px;
-}
-
-.buy{background:#DBEAFE}
-.rent{background:#FEE2E2}
-.high{background:#FECACA}
-.low{background:#DCFCE7}
-
-/* Assign button */
-.manage{
-margin-top:12px;
-padding:8px;
-width:100%;
-background:#2563EB;
-color:white;
-border:none;
-border-radius:8px;
-cursor:pointer;
+/* Status dropdown */
+.status-select{
+margin-top:8px;
+padding:5px;
 }
 
 /* Popup */
@@ -88,22 +66,15 @@ display:none;justify-content:center;align-items:center;
 
 .popup-box{
 background:white;
-padding:25px;
-border-radius:14px;
-width:360px;
+padding:20px;
+border-radius:12px;
+width:350px;
 }
 
 .popup input,.popup select{
 width:100%;
-padding:10px;
-margin-bottom:10px;
-border-radius:8px;
-border:1px solid #ccc;
-}
-
-.actions{
-display:flex;
-justify-content:space-between;
+padding:8px;
+margin-bottom:8px;
 }
 </style>
 </head>
@@ -112,63 +83,74 @@ justify-content:space-between;
 
 <div class="sidebar">
   <div class="logo">DealBridge Estates</div>
-  <div class="menu-item" onclick="go('dashboard.html')">Dashboard</div>
-  <div class="menu-item" onclick="go('my-leads.html')">My Leads</div>
-  <div class="menu-item" onclick="go('my-day.html')">My Day</div>
+  <div class="menu-item">Dashboard</div>
+  <div class="menu-item">My Leads</div>
+  <div class="menu-item">My Day</div>
   <div class="menu-item active">All Leads</div>
-  <div class="menu-item" onclick="go('properties.html')">Properties</div>
 </div>
 
 <div class="main">
-  <div class="header">
-    <h1>All Leads</h1>
-    <button class="btn" onclick="openPopup()">+ Add Lead</button>
-  </div>
 
-  <div class="leads-container" id="leadsContainer"></div>
+<div class="header">
+  <h1>All Leads</h1>
+  <button class="btn" onclick="openPopup()">+ Add Lead</button>
+</div>
+
+<!-- FILTERS -->
+<div class="filters">
+  <input type="text" id="search" placeholder="Search..." oninput="applyFilters()">
+
+  <select id="filterType" onchange="applyFilters()">
+    <option value="">All Type</option>
+    <option value="buy">Buy</option>
+    <option value="rent">Rent</option>
+  </select>
+
+  <select id="filterUrgency" onchange="applyFilters()">
+    <option value="">All Urgency</option>
+    <option value="high">High</option>
+    <option value="low">Low</option>
+  </select>
+</div>
+
+<div class="leads-container" id="leadsContainer"></div>
+
 </div>
 
 <!-- POPUP -->
 <div class="popup" id="popup">
-  <div class="popup-box">
+<div class="popup-box">
 
-    <h3>Add Lead</h3>
+<h3>Add Lead</h3>
 
-    <input id="name" placeholder="Client Name">
-    <input id="phone" placeholder="Phone">
-    <input id="location" placeholder="Location">
-    <input id="area" placeholder="Area (sq ft)">
+<input id="name" placeholder="Name">
+<input id="phone" placeholder="Phone">
+<input id="location" placeholder="Location">
+<input id="area" placeholder="Area">
 
-    <input id="budgetMin" placeholder="Budget Min">
-    <input id="budgetMax" placeholder="Budget Max">
+<input id="budgetMin" placeholder="Min Budget">
+<input id="budgetMax" placeholder="Max Budget">
 
-    <select id="type">
-      <option value="buy">Buy</option>
-      <option value="rent">Rent</option>
-    </select>
+<select id="type">
+<option value="buy">Buy</option>
+<option value="rent">Rent</option>
+</select>
 
-    <select id="category">
-      <option value="residential">Residential</option>
-      <option value="commercial">Commercial</option>
-    </select>
+<select id="propertyType">
+<option value="house">House</option>
+<option value="shop">Shop</option>
+<option value="plot">Plot</option>
+</select>
 
-    <select id="propertyType">
-      <option value="house">House</option>
-      <option value="shop">Shop</option>
-      <option value="plot">Plot</option>
-    </select>
+<select id="urgency">
+<option value="low">Low</option>
+<option value="high">High</option>
+</select>
 
-    <select id="urgency">
-      <option value="low">Low Urgency</option>
-      <option value="high">High Urgency</option>
-    </select>
+<button onclick="addLead()">Save</button>
+<button onclick="closePopup()">Cancel</button>
 
-    <div class="actions">
-      <button onclick="closePopup()">Cancel</button>
-      <button onclick="addLead()">Save</button>
-    </div>
-
-  </div>
+</div>
 </div>
 
 <script>
@@ -185,6 +167,7 @@ firebase.initializeApp(firebaseConfig);
 const auth=firebase.auth();
 const db=firebase.database();
 
+let allLeads={};
 let currentUser="";
 
 /* AUTH */
@@ -197,111 +180,116 @@ loadLeads();
 }
 });
 
-/* LOAD LEADS */
+/* LOAD */
 function loadLeads(){
-
 db.ref("leads").on("value",snap=>{
-let data=snap.val();
+allLeads=snap.val()||{};
+applyFilters();
+});
+}
+
+/* FILTER + SEARCH */
+function applyFilters(){
+
+let search=document.getElementById("search").value.toLowerCase();
+let type=document.getElementById("filterType").value;
+let urgency=document.getElementById("filterUrgency").value;
+
 let container=document.getElementById("leadsContainer");
 container.innerHTML="";
 
-for(let id in data){
+Object.keys(allLeads).forEach(id=>{
 
-let l=data[id];
+let l=allLeads[id];
 
-let assignBtn="";
+if(search && !(l.name.toLowerCase().includes(search) || l.phone.includes(search) || l.location.toLowerCase().includes(search))) return;
+if(type && l.type!==type) return;
+if(urgency && l.urgency!==urgency) return;
+
+let btn="";
 if(!l.assignedTo){
-assignBtn=`<button class="manage" onclick="assignLead('${id}')">Assign to Me</button>`;
+btn=`<button onclick="assignLead('${id}')">Assign</button>`;
 }
 
 container.innerHTML+=`
 <div class="lead-card">
+<h3>${l.name}</h3>
+<p>${l.phone}</p>
+<p>${l.location}</p>
+<p>₹${l.budgetMin}-${l.budgetMax}</p>
+<p>ID: ${l.leadId}</p>
 
-<div class="lead-title">${l.name}</div>
-<div class="lead-meta">${l.phone} • ${l.location}</div>
+<select class="status-select" onchange="updateStatus('${id}',this.value)">
+<option ${l.status==="new"?"selected":""}>new</option>
+<option ${l.status==="contacted"?"selected":""}>contacted</option>
+<option ${l.status==="visit"?"selected":""}>visit</option>
+<option ${l.status==="closed"?"selected":""}>closed</option>
+</select>
 
-<div>
-<span class="badge ${l.type}">${l.type}</span>
-<span class="badge">${l.propertyType}</span>
-<span class="badge ${l.urgency}">${l.urgency}</span>
-</div>
+<p>Assigned: ${l.assignedTo || "None"}</p>
 
-<p style="margin-top:10px">₹${l.budgetMin} - ₹${l.budgetMax}</p>
-<p>Area: ${l.area} sq ft</p>
-
-<p style="margin-top:8px;font-size:12px;color:#64748B">
-ID: ${l.leadId} | Assigned: ${l.assignedTo || "None"}
-</p>
-
-${assignBtn}
-
+${btn}
 </div>
 `;
-}
 });
 }
 
-/* ADD LEAD */
-function addLead(){
+/* ADD */
+async function addLead(){
 
-let nameVal=document.getElementById("name").value.trim();
-let phoneVal=document.getElementById("phone").value.trim();
+let name=document.getElementById("name").value.trim();
+let phone=document.getElementById("phone").value.trim();
 
-if(nameVal==="" || phoneVal===""){
-alert("Name and Phone required");
+if(!name || !phone){
+alert("Fill required fields");
 return;
 }
 
-db.ref("meta/lastLeadId").once("value").then(snap=>{
+let snap=await db.ref("meta/lastLeadId").get();
+let last=snap.exists()?snap.val():0;
 
-let last=snap.val()||0;
 let newId=last+1;
-
 let leadId="L"+String(newId).padStart(3,"0");
+
 let key=Date.now();
 
-db.ref("leads/"+key).set({
+await db.ref("leads/"+key).set({
 leadId,
-name:nameVal,
-phone:phoneVal,
+name,
+phone,
 location:location.value,
 area:area.value,
 budgetMin:budgetMin.value,
 budgetMax:budgetMax.value,
 type:type.value,
-category:category.value,
 propertyType:propertyType.value,
 urgency:urgency.value,
+status:"new",
 assignedTo:""
 });
 
-db.ref("meta/lastLeadId").set(newId);
+await db.ref("meta/lastLeadId").set(newId);
 
-/* CLEAR FORM */
+/* clear */
 document.querySelectorAll(".popup input").forEach(i=>i.value="");
 
-/* CLOSE */
 closePopup();
-
-});
 }
 
 /* ASSIGN */
 function assignLead(id){
-
-db.ref("leads/"+id).update({
-assignedTo:currentUser
-});
-
+db.ref("leads/"+id).update({assignedTo:currentUser});
 db.ref("users/"+currentUser+"/myLeads/"+id).set(true);
+}
 
+/* STATUS */
+function updateStatus(id,status){
+db.ref("leads/"+id).update({status});
 }
 
 /* POPUP */
-function openPopup(){ popup.style.display="flex"; }
-function closePopup(){ popup.style.display="none"; }
-
-function go(p){window.location.href=p;}
+function openPopup(){popup.style.display="flex";}
+function closePopup(){popup.style.display="none";}
 
 </script>
 
