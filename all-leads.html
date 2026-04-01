@@ -315,8 +315,14 @@ ref.once("value").then(s=>{ref.set((s.val()||0)+1);});
 
 function val(id){return document.getElementById(id).value}
 function go(p){window.location.href=p;}
-function openPopup(){popup.style.display="flex";}
-function closePopup(){popup.style.display="none";}
+function openPopup(){
+document.getElementById("popup").style.display="flex";
+}
+
+function closePopup(){
+document.getElementById("popup").style.display="none";
+}
+
 
 </script>
 
