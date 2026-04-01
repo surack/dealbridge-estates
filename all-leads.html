@@ -18,7 +18,10 @@ background:#1E293B;color:white;
 padding:20px;position:fixed;
 }
 .logo{font-size:22px;font-weight:700;margin-bottom:30px}
-.menu-item{padding:10px;margin:10px 0;border-radius:8px;cursor:pointer;}
+.menu-item{
+padding:10px;margin:10px 0;
+border-radius:8px;cursor:pointer;
+}
 .menu-item:hover,.active{background:#2563EB}
 
 /* Main */
@@ -50,40 +53,20 @@ padding:10px;border-radius:8px;border:1px solid #ccc;
 /* Cards */
 .leads-container{
 display:grid;
-grid-template-columns:repeat(auto-fill,minmax(340px,1fr));
+grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
 gap:20px;
 }
 
-/* ✅ UPDATED CARD UI ONLY */
 .card{
 background:white;
-padding:20px;
-border-radius:16px;
-box-shadow:0 10px 25px rgba(0,0,0,0.06);
-transition:0.2s;
-}
-.card:hover{transform:translateY(-3px)}
-
-.title{
-font-size:18px;
-font-weight:600;
-margin-bottom:6px;
+padding:18px;
+border-radius:14px;
+box-shadow:0 10px 25px rgba(0,0,0,0.05);
 }
 
-.row{
-font-size:14px;
-margin-bottom:6px;
-color:#334155;
-}
-
-.label{
-font-size:12px;
-color:#64748B;
-}
-
-.tags{
-margin:8px 0;
-}
+/* NEW PROFESSIONAL LABEL STYLE */
+.label{font-size:12px;color:#64748B;}
+.value{margin-bottom:6px;font-size:14px;}
 
 .tag{
 display:inline-block;
@@ -94,19 +77,13 @@ margin-right:5px;
 background:#DBEAFE;
 }
 
-.urgency{
-font-size:11px;
-padding:3px 8px;
-border-radius:6px;
-margin-left:6px;
-}
-.low{background:#E0F2FE;color:#0369A1;}
-.high{background:#FEE2E2;color:#B91C1C;}
-
 .status-tag{
-margin-top:6px;
-font-size:12px;
-color:#16A34A;
+display:inline-block;
+padding:4px 8px;
+border-radius:6px;
+font-size:11px;
+background:#DCFCE7;
+margin-top:5px;
 }
 
 .manage{
@@ -118,7 +95,7 @@ color:white;border:none;border-radius:8px;
 cursor:pointer;
 }
 
-/* Popup (UNCHANGED) */
+/* Popup */
 .popup{
 position:fixed;top:0;left:0;width:100%;height:100%;
 background:rgba(0,0,0,0.5);
@@ -145,20 +122,13 @@ border:1px solid #ccc;
 .actions{display:flex;gap:10px;}
 
 .save-btn{
-flex:1;
-padding:10px;
-background:#2563EB;
-color:white;
-border:none;
-border-radius:8px;
+flex:1;padding:10px;
+background:#2563EB;color:white;border:none;border-radius:8px;
 }
 
 .cancel-btn{
-flex:1;
-padding:10px;
-background:#E2E8F0;
-border:none;
-border-radius:8px;
+flex:1;padding:10px;
+background:#E2E8F0;border:none;border-radius:8px;
 }
 </style>
 </head>
@@ -167,6 +137,7 @@ border-radius:8px;
 
 <div class="sidebar">
 <div class="logo">DealBridge Estates</div>
+
 <div class="menu-item" onclick="go('dashboard.html')">Dashboard</div>
 <div class="menu-item" onclick="go('my-leads.html')">My Leads</div>
 <div class="menu-item" onclick="go('my-day.html')">My Day</div>
@@ -227,6 +198,49 @@ border-radius:8px;
 
 </div>
 
+<!-- POPUP SAME (UNCHANGED) -->
+<div class="popup" id="popup">
+<div class="popup-box">
+<h3>Add Lead</h3>
+
+<input id="name" placeholder="Client Name">
+<input id="phone" placeholder="Phone Number">
+<input id="location" placeholder="Location">
+
+<input id="area" placeholder="Area">
+<input id="budgetMin" placeholder="Budget Min">
+<input id="budgetMax" placeholder="Budget Max">
+
+<select id="type">
+<option value="buy">Buy</option>
+<option value="rent">Rent</option>
+</select>
+
+<select id="category">
+<option value="residential">Residential</option>
+<option value="commercial">Commercial</option>
+</select>
+
+<select id="propertyType">
+<option value="house">House</option>
+<option value="shop">Shop</option>
+<option value="plot">Plot</option>
+</select>
+
+<select id="urgency">
+<option value="low">Low</option>
+<option value="high">High</option>
+</select>
+
+<textarea id="remark" placeholder="Remark"></textarea>
+
+<div class="actions">
+<button class="cancel-btn" onclick="closePopup()">Cancel</button>
+<button class="save-btn" onclick="addLead()">Save</button>
+</div>
+</div>
+</div>
+
 <script>
 
 const firebaseConfig={
@@ -245,8 +259,12 @@ let allLeads={};
 let currentUser="";
 
 auth.onAuthStateChanged(user=>{
-if(!user){window.location.href="index.html";}
-else{currentUser=user.email.split("@")[0];load();}
+if(!user){
+window.location.href="index.html";
+}else{
+currentUser=user.email.split("@")[0];
+load();
+}
 });
 
 function load(){
@@ -293,27 +311,35 @@ btn=`<button class="manage" onclick="assign('${id}')">Assign to Me</button>`;
 container.innerHTML+=`
 <div class="card">
 
-<div class="title">${l.name}</div>
+<h3>${l.name}</h3>
 
-<div class="row">${l.phone}</div>
-<div class="row">${l.location || ""}</div>
+<div class="label">📱 Phone</div>
+<div class="value">${l.phone}</div>
 
-<div class="row"><b>Area:</b> ${l.area || "-"}</div>
+<div class="label">📍 Location</div>
+<div class="value">${l.location || "-"}</div>
 
-<div class="tags">
+<div class="label">📐 Area</div>
+<div class="value">${l.area || "-"}</div>
+
+<div>
 <span class="tag">${l.type}</span>
 <span class="tag">${l.category}</span>
 <span class="tag">${l.propertyType}</span>
-<span class="urgency ${l.urgency}">${l.urgency}</span>
 </div>
 
-<div class="row"><b>Budget:</b> ₹${l.budgetMin || "-"} - ${l.budgetMax || "-"}</div>
+<div class="label">💰 Budget</div>
+<div class="value">₹${l.budgetMin || "-"} - ${l.budgetMax || "-"}</div>
 
-<div class="row"><b>Remark:</b> ${l.remark || "-"}</div>
+<div class="label">⚡ Urgency</div>
+<div class="value">${l.urgency || "-"}</div>
+
+<div class="label">📝 Remark</div>
+<div class="value">${l.remark || "-"}</div>
 
 <div class="status-tag">Status: ${l.status}</div>
 
-<div class="row"><b>Assigned:</b> ${l.assignedTo || "None"}</div>
+<p><b>Assigned:</b> ${l.assignedTo || "None"}</p>
 
 ${btn}
 
@@ -324,15 +350,31 @@ ${btn}
 document.getElementById("totalLeads").innerText = count + " Leads";
 }
 
+/* ✅ UPDATED ASSIGN FUNCTION */
 function assign(id){
+
 db.ref("leads/"+id).update({assignedTo:currentUser});
+
+/* 🔥 INCREASE USER LEADS COUNT */
+let ref = db.ref("users/"+currentUser+"/leads");
+
+ref.once("value").then(s=>{
+let current = s.val() || 0;
+ref.set(current + 1);
+});
+
 }
 
 function val(id){return document.getElementById(id).value}
-function go(p){window.location.href=p;}
 
-function openPopup(){document.getElementById("popup").style.display="flex";}
-function closePopup(){document.getElementById("popup").style.display="none";}
+function clearForm(){
+document.querySelectorAll(".popup input, .popup textarea").forEach(i=>i.value="");
+}
+
+function go(page){window.location.href=page;}
+
+function openPopup(){popup.style.display="flex";}
+function closePopup(){popup.style.display="none";}
 
 </script>
 
