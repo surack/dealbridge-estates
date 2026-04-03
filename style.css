@@ -1,53 +1,133 @@
-body {
+* {
   margin: 0;
-  font-family: Arial, sans-serif;
-  background: linear-gradient(135deg, #1e3c72, #2a5298);
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+body {
   height: 100vh;
+}
+
+.main-container {
+  display: flex;
+  height: 100vh;
+}
+
+/* LEFT PANEL */
+.left-panel {
+  flex: 1;
+  background: linear-gradient(135deg, #1e3c72, #2a5298);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 60px;
+}
+
+.left-panel h1 {
+  font-size: 36px;
+  margin-bottom: 15px;
+}
+
+.left-panel p {
+  font-size: 16px;
+  opacity: 0.9;
+}
+
+/* RIGHT PANEL */
+.right-panel {
+  flex: 1;
   display: flex;
   justify-content: center;
   align-items: center;
+  background: #f5f7fb;
 }
 
-.container {
-  width: 100%;
-  max-width: 400px;
-}
-
+/* LOGIN BOX */
 .login-box {
+  width: 100%;
+  max-width: 380px;
   background: white;
-  padding: 30px;
-  border-radius: 10px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-  text-align: center;
+  padding: 35px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
 }
 
 .login-box h2 {
-  margin-bottom: 10px;
+  margin-bottom: 5px;
 }
 
-.login-box input {
+.sub-text {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 25px;
+}
+
+/* INPUT */
+.input-group {
+  margin-bottom: 18px;
+}
+
+.input-group label {
+  font-size: 13px;
+  display: block;
+  margin-bottom: 5px;
+  color: #333;
+}
+
+.input-group input {
   width: 100%;
-  padding: 12px;
-  margin: 10px 0;
-  border-radius: 5px;
+  padding: 11px;
+  border-radius: 6px;
   border: 1px solid #ccc;
+  outline: none;
 }
 
-.login-box button {
+.input-group input:focus {
+  border-color: #2a5298;
+}
+
+/* PASSWORD */
+.password-wrapper {
+  position: relative;
+}
+
+.password-wrapper span {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+/* BUTTON */
+button {
   width: 100%;
   padding: 12px;
   background: #2a5298;
   color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: 6px;
+  font-size: 15px;
   cursor: pointer;
 }
 
-.login-box button:hover {
+button:hover {
   background: #1e3c72;
 }
 
+/* ERROR */
 .error {
   color: red;
+  font-size: 13px;
   margin-top: 10px;
+  text-align: center;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .left-panel {
+    display: none;
+  }
 }
