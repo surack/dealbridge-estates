@@ -2,27 +2,50 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CRM Login</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="container">
-  <div class="login-box">
-    <h2>Real Estate CRM</h2>
-    <p>Login to your account</p>
+<div class="main-container">
 
-    <input type="email" id="email" placeholder="Email">
-    <input type="password" id="password" placeholder="Password">
-
-    <button onclick="login()">Login</button>
-
-    <p class="error" id="error"></p>
+  <!-- LEFT SIDE -->
+  <div class="left-panel">
+    <h1>Real Estate CRM</h1>
+    <p>Manage leads, properties, and deals efficiently.</p>
   </div>
+
+  <!-- RIGHT SIDE -->
+  <div class="right-panel">
+    <div class="login-box">
+      <h2>Welcome Back</h2>
+      <p class="sub-text">Login to continue</p>
+
+      <div class="input-group">
+        <label>Email</label>
+        <input type="email" id="email" placeholder="Enter your email">
+      </div>
+
+      <div class="input-group">
+        <label>Password</label>
+        <div class="password-wrapper">
+          <input type="password" id="password" placeholder="Enter your password">
+          <span onclick="togglePassword()">👁️</span>
+        </div>
+      </div>
+
+      <button id="loginBtn" onclick="login()">Login</button>
+
+      <p class="error" id="error"></p>
+    </div>
+  </div>
+
 </div>
 
 <script type="module" src="firebase.js"></script>
 <script type="module" src="auth.js"></script>
+<script src="ui.js"></script>
 
 </body>
 </html>
