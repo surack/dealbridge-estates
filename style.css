@@ -2,21 +2,21 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: Inter, system-ui, sans-serif;
+  font-family: Inter, system-ui, -apple-system, sans-serif;
 }
 
 body {
   height: 100vh;
-  background: #f8fafc;
+  background: #f1f5f9;
 }
 
-/* LAYOUT */
+/* MAIN LAYOUT */
 .wrapper {
   display: flex;
   height: 100vh;
 }
 
-/* LEFT SIDE */
+/* LEFT PANEL */
 .left {
   flex: 1;
   background: #0f172a;
@@ -27,21 +27,22 @@ body {
   padding: 40px;
 }
 
-.left-content {
-  max-width: 400px;
+.brand {
+  max-width: 420px;
 }
 
-.left h1 {
-  font-size: 32px;
+.brand h1 {
+  font-size: 34px;
   margin-bottom: 12px;
 }
 
-.left p {
+.brand p {
+  font-size: 15px;
   color: #cbd5f5;
   line-height: 1.6;
 }
 
-/* RIGHT SIDE */
+/* RIGHT PANEL */
 .right {
   flex: 1;
   display: flex;
@@ -49,15 +50,26 @@ body {
   justify-content: center;
 }
 
-/* FORM */
-.form-box {
+/* LOGIN CARD */
+.login-card {
   width: 100%;
-  max-width: 360px;
+  max-width: 380px;
+  background: white;
+  padding: 35px;
+  border-radius: 10px;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.08);
 }
 
-.form-box h2 {
-  margin-bottom: 25px;
+/* HEADINGS */
+.login-card h2 {
   font-size: 22px;
+  margin-bottom: 5px;
+}
+
+.subtitle {
+  font-size: 13px;
+  color: #64748b;
+  margin-bottom: 25px;
 }
 
 /* INPUT */
@@ -66,10 +78,10 @@ body {
 }
 
 .input-group label {
-  display: block;
   font-size: 13px;
-  margin-bottom: 6px;
   color: #334155;
+  display: block;
+  margin-bottom: 6px;
 }
 
 .input-group input {
@@ -78,6 +90,7 @@ body {
   border-radius: 6px;
   border: 1px solid #cbd5e1;
   font-size: 14px;
+  transition: 0.2s;
 }
 
 .input-group input:focus {
@@ -86,11 +99,11 @@ body {
 }
 
 /* PASSWORD */
-.password-field {
+.password-box {
   position: relative;
 }
 
-.password-field span {
+.password-box span {
   position: absolute;
   right: 10px;
   top: 50%;
@@ -108,7 +121,7 @@ button {
   border-radius: 6px;
   font-size: 14px;
   cursor: pointer;
-  margin-top: 10px;
+  transition: 0.2s;
 }
 
 button:hover {
@@ -117,9 +130,10 @@ button:hover {
 
 /* ERROR */
 .error {
-  color: red;
-  font-size: 13px;
   margin-top: 10px;
+  font-size: 13px;
+  color: #dc2626;
+  text-align: center;
 }
 
 /* MOBILE */
