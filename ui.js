@@ -1,4 +1,4 @@
 window.togglePassword = function () {
-  const password = document.getElementById("password");
-  password.type = password.type === "password" ? "text" : "password";
+  const input = document.getElementById("password");
+  input.type = input.type === "password" ? "text" : "password";
 };
