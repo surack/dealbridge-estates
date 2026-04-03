@@ -3,36 +3,47 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CRM Login</title>
+  <title>Login | Real Estate CRM</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="background"></div>
+<div class="wrapper">
 
-<div class="container">
-  <div class="login-card">
-
-    <div class="logo">🏠</div>
-    <h1>Real Estate CRM</h1>
-    <p class="subtitle">Welcome back! Please login to continue</p>
-
-    <div class="input-group">
-      <input type="email" id="email" required>
-      <label>Email Address</label>
+  <!-- LEFT SIDE -->
+  <div class="left">
+    <div class="left-content">
+      <h1>Real Estate CRM</h1>
+      <p>Manage leads, properties and deals — all in one place.</p>
     </div>
-
-    <div class="input-group">
-      <input type="password" id="password" required>
-      <label>Password</label>
-      <span class="toggle" onclick="togglePassword()">👁️</span>
-    </div>
-
-    <button id="loginBtn" onclick="login()">Login</button>
-
-    <p class="error" id="error"></p>
-
   </div>
+
+  <!-- RIGHT SIDE -->
+  <div class="right">
+    <div class="form-box">
+
+      <h2>Sign in</h2>
+
+      <div class="input-group">
+        <label>Email</label>
+        <input type="email" id="email" placeholder="you@example.com">
+      </div>
+
+      <div class="input-group">
+        <label>Password</label>
+        <div class="password-field">
+          <input type="password" id="password" placeholder="Enter password">
+          <span onclick="togglePassword()">👁</span>
+        </div>
+      </div>
+
+      <button id="loginBtn" onclick="login()">Sign In</button>
+
+      <p class="error" id="error"></p>
+
+    </div>
+  </div>
+
 </div>
 
 <script type="module" src="firebase.js"></script>
