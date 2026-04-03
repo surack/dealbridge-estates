@@ -1,6 +1,7 @@
 import { auth } from "./firebase.js";
 import {
   signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
@@ -9,6 +10,7 @@ import {
 ========================= */
 onAuthStateChanged(auth, (user) => {
   if (user) {
+    // If already logged in → go to dashboard
     if (!window.location.pathname.includes("dashboard.html")) {
       window.location.href = "dashboard.html";
     }
@@ -29,47 +31,67 @@ window.login = function () {
 
   // Basic validation
   if (!email || !password) {
-    errorBox.innerText = "Please enter both email and password.";
+    errorBox.innerText = "Please enter email and password";
     return;
   }
 
-  // Loading state
-  btn.innerText = "Signing in...";
+  // Button loading state
+  btn.innerText = "Logging in...";
   btn.disabled = true;
 
   signInWithEmailAndPassword(auth, email, password)
     .then(() => {
+      // Success → redirect
       window.location.href = "dashboard.html";
     })
     .catch((error) => {
-
-      // 🔥 Clean user-friendly messages
-      let message = "Unable to login. Please try again.";
+      // Friendly error messages
+      let message = "Login failed";
 
       switch (error.code) {
         case "auth/invalid-email":
-          message = "Please enter a valid email address.";
+          message = "Invalid email format";
           break;
-
-        case "auth/invalid-credential":
         case "auth/user-not-found":
+          message = "User not found";
+          break;
         case "auth/wrong-password":
-          message = "Incorrect email or password.";
+          message = "Incorrect password";
           break;
-
-        case "auth/too-many-requests":
-          message = "Too many attempts. Try again later.";
-          break;
-
-        case "auth/network-request-failed":
-          message = "Network error. Check your internet connection.";
-          break;
+        default:
+          message = error.message;
       }
 
       errorBox.innerText = message;
 
       // Reset button
-      btn.innerText = "Sign In";
+      btn.innerText = "Login";
       btn.disabled = false;
+    });
+};
+
+/* =========================
+   OPTIONAL: SIGNUP FUNCTION
+   (Use later if needed)
+========================= */
+window.signup = function () {
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
+  const errorBox = document.getElementById("error");
+
+  errorBox.innerText = "";
+
+  if (!email || !password) {
+    errorBox.innerText = "Please enter email and password";
+    return;
+  }
+
+  createUserWithEmailAndPassword(auth, email, password)
+    .then(() => {
+      alert("Account created successfully!");
+      window.location.href = "dashboard.html";
+    })
+    .catch((error) => {
+      errorBox.innerText = error.message;
     });
 };
